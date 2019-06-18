@@ -115,8 +115,13 @@ class PlayArea extends VuexModule {
     this.playArea = [...playArea]
   }
 
+  /**
+   * ミノを回転させる。
+   * 
+   */
   @Mutation
   private SET_ROTATE() {
+    // ミノ回転配列を一巡させるために、ミノ回転配列の長さで割ったあまりが必要になる。
     this.currentMino.rotate = (this.currentMino.rotate + 1) % MinoTemplates[this.currentMino.minoType].blocks.length
   }
 
@@ -135,45 +140,33 @@ class PlayArea extends VuexModule {
 
 
   /**
-   * 指定した相対位置へ移動可能かを判定する
-   * @param moveTo 移動先の相対位置
+   * 操作中のミノを右隣へ移動させる。
    */
   @Action
-  private canMove(moveTo: Point): boolean {
-    const pointX = this.currentMino.x + moveTo.x
-    const pointY = this.currentMino.y + moveTo.y
-    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
-    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate % currentMinoTemplate.blocks.length]
-
-    for (let y = 0; y < minoBlock.length; y++) {
-      const xLength = minoBlock[y].length
-      for (let x = 0; x < xLength; x++) {
-        console.log(this.playArea[pointY + y][pointX + x])
-        if (this.playArea[pointY + y][pointX + x] !== 0) {
-          return false
-        } 
-      }
-    }
-    return true
-  }
-
-
-  @Action
-  moveLeft() {
+  async moveLeft() {
     const moveTo: Point = {x: -1, y: 0}
-    const can = this.canMove(moveTo)
-    if (!this.canMove(moveTo)) {
-      return
+    const pointX = this.currentMino.x + moveTo.x
+    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
+    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
+    for (let y = 0; y < minoBlock.length; y++) {
+      if (this.playArea[this.currentMino.y + y][pointX] !== 0) {
+        return
+      }
     }
     this.DRAW_MINO(true)
     this.MOVE_RELATIVE_CURRENT_COORDINATE(moveTo)
     this.DRAW_MINO()
   }
   @Action
-  moveRight() {
+  async moveRight() {
     const moveTo: Point = {x: 1, y: 0}
-    if (!this.canMove(moveTo)) {
-      return
+    const pointX = this.currentMino.x + moveTo.x
+    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
+    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
+    for (let y = 0; y < minoBlock.length; y++) {
+      if (this.playArea[this.currentMino.y + y][pointX + minoBlock[y].length] !== 0) {
+        return
+      }
     }
     this.DRAW_MINO(true)
     this.MOVE_RELATIVE_CURRENT_COORDINATE(moveTo)
@@ -181,8 +174,22 @@ class PlayArea extends VuexModule {
   }
   @Action
   moveDown() {
+    const moveTo: Point = {x: 0, y: 1}
+    const pointY = this.currentMino.y + moveTo.y
+    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
+    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
+    for (let x = 0; x < minoBlock[0].length; x++ ) {
+      // ミノのy方向で一番長い部分のみを移動可能判定の対象とする
+      if (minoBlock[minoBlock.length - 1][x] === 0 ) {
+        continue
+      }
+      if (this.playArea[pointY + minoBlock.length][this.currentMino.x + x] !== 0) {
+        return
+      }
+    }
+
     this.DRAW_MINO(true)
-    this.MOVE_RELATIVE_CURRENT_COORDINATE({x: 0, y: 1})
+    this.MOVE_RELATIVE_CURRENT_COORDINATE(moveTo)
     this.DRAW_MINO()
   }
   @Action

@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { setInterval } from 'timers'
+// import { setInterval } from 'timers'
 import PlayAreaModule from '@/store/modules/play'
 
 export default Vue.extend({
@@ -24,7 +24,8 @@ export default Vue.extend({
       PlayAreaModule.moveLeft()
     },
     down() {
-      setInterval(() => PlayAreaModule.moveDown(), 1000)
+      PlayAreaModule.moveDown()
+      // setInterval(() => PlayAreaModule.moveDown(), 1000)
     },
     rotate() {
       PlayAreaModule.rotate()

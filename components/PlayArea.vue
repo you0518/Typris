@@ -14,17 +14,17 @@
             :fill="getColor(mino)"
             stroke="black"
             stroke-width="1")
-    b-button(@click="left" variant="warning") 左
-    b-button(@click="right" variant="danger") 右
-    b-button(@click="down" variant="primary") 下
-    b-button(@click="rotate") 回転
+    test
 </template>
 <script lang="ts">
-import { setInterval } from 'timers'
 import Vue from 'vue'
 import PlayAreaModule from '@/store/modules/play'
+import Test from '@/components/Test.vue'
 
 export default Vue.extend({
+  components: {
+    Test
+  },
   data() {
     return {
       // 1マスのサイズ[px]
@@ -48,18 +48,6 @@ export default Vue.extend({
     PlayAreaModule.startPlay()
   },
   methods: {
-    right() {
-      PlayAreaModule.startPlay()
-    },
-    left() {
-      PlayAreaModule.moveLeft()
-    },
-    down() {
-      setInterval(() => PlayAreaModule.moveDown(), 1000)
-    },
-    rotate() {
-      PlayAreaModule.rotate()
-    },
     getColor(index: number): string {
       switch (index) {
         case 0:

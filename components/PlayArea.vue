@@ -14,6 +14,14 @@
             :fill="getColor(mino)"
             stroke="black"
             stroke-width="1")
+          rect(v-else
+            :y="i * blockSize"
+            :x="j * blockSize"
+            :width="blockSize"
+            :height="blockSize"
+            fill="brown"
+            stroke="black"
+            stroke-width="1")
     test
 </template>
 <script lang="ts">
@@ -33,10 +41,10 @@ export default Vue.extend({
   },
   computed: {
     playAreaWidth(): number {
-      return this.blockSize * (PlayAreaModule.maxWidth - 2)
+      return this.blockSize * PlayAreaModule.maxWidth
     },
     playAreaHeight(): number {
-      return this.blockSize * (PlayAreaModule.maxHeight - 2)
+      return this.blockSize * PlayAreaModule.maxHeight
     },
     playArea(): number[][] {
       // 直接importしたものをsvgでつかうと、cannot find PlayAreaModuleと言われてしまうため。

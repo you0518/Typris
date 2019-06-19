@@ -1,5 +1,6 @@
 <template lang="pug">
   .typris.d-flex
+    hold-mino
     play-area
     next-mino
 </template>

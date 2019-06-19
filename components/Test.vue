@@ -10,6 +10,7 @@
       b-button(@click="down" variant="primary") ↓
     div.m-1
       b-button(@click="auto" variant="info") AUTO
+      b-button(@click="hold" variant="info") HOLD
 </template>
 
 <script lang="ts">
@@ -36,6 +37,9 @@ export default Vue.extend({
     },
     rotate() {
       PlayAreaModule.rotate()
+    },
+    hold() {
+      PlayAreaModule.setHold()
     }
   }
 })

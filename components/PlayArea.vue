@@ -5,13 +5,13 @@
       :height="playAreaHeight"
       :viewBox="`0 0 ${playAreaWidth} ${playAreaHeight}`")
       template(v-for="(area, i) in playArea")
-        template(v-for="(mino, j) in area")
-          rect(v-if="mino!==-1"
+        template(v-for="(point, j) in area")
+          rect(v-if="point.mino!==-1"
             :y="i * blockSize"
             :x="j * blockSize"
             :width="blockSize"
             :height="blockSize"
-            :fill="getColor(mino)"
+            :fill="getColor(point.mino)"
             stroke="gray"
             stroke-width="1")
           //- 壁の描画
@@ -48,11 +48,11 @@ export default Vue.extend({
     playAreaHeight(): number {
       return this.blockSize * PlayAreaModule.maxHeight
     },
-    playArea(): number[][] {
+    playArea() {
       // 直接importしたものをsvgでつかうと、cannot find PlayAreaModuleと言われてしまうため。
       return PlayAreaModule.getPlayArea
     },
-    colorList(): string[] {
+    colorList() {
       return PlayAreaModule.getColorList
     },
     gameOver() {
@@ -63,7 +63,7 @@ export default Vue.extend({
     PlayAreaModule.startPlay()
   },
   methods: {
-    getColor(index: number): string {
+    getColor(index: number) {
       return index >= 0 && index < this.colorList.length
         ? this.colorList[index]
         : 'black'

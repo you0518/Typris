@@ -44,6 +44,7 @@ class PlayArea extends VuexModule {
   // ランダムでミノを取り出すためのやつ
   private shuffleMinoList: number[] = [...Array(MinoTemplates.length).keys()]
 
+  private isGameOver = false
   /**
    * ミノ表示領域を、壁を-1で、ミノ無しを0で初期化する
    */
@@ -66,18 +67,21 @@ class PlayArea extends VuexModule {
   /**
    * 次のミノ一覧をブロックで返す
    */
-  get getNextMinoBlockList(): number[][][] {
+  get getNextMinoBlockList() {
     return this.nextMinoList.map(el => {
       return MinoTemplates[el].blocks[0]
     })
   }
 
-  get getColorList(): string[] {
+  get getColorList() {
     return ["white", ...MinoTemplates.map(el => {
       return el.color
     })]
   }
 
+  get getGameOver() {
+    return this.isGameOver
+  }
   /** 
    * 次のミノ配列を上書きする
    */
@@ -178,6 +182,12 @@ class PlayArea extends VuexModule {
     this.playArea = [...playArea]
   }
 
+  @Mutation
+  private SET_GAME_OVER() {
+    this.isGameOver = true
+  }
+
+
   @Action
   startPlay() {
     shuffle(this.shuffleMinoList)
@@ -188,8 +198,9 @@ class PlayArea extends VuexModule {
     this.DRAW_MINO()
   }
 
-  /**
+/**
  * 指定した座標へミノが移動可能かどうかを判定する
+ * 移動可能の時は、元のミノは削除済みである
  * @param moveTo 移動先座標（絶対）
  */
   @Action
@@ -205,6 +216,7 @@ class PlayArea extends VuexModule {
           continue
         }
         if (this.playArea[moveTo.y + y][moveTo.x + x] !== 0) {
+          this.DRAW_MINO()
           return false
         }
       }
@@ -218,7 +230,6 @@ class PlayArea extends VuexModule {
   async moveLeft() {
     const moveTo: Point = {x: this.currentMino.x - 1, y: this.currentMino.y}
     if (!await this.canMove(moveTo)) {
-      this.DRAW_MINO()
       return
     }
     this.MOVE_ABSOLUTE_CURRENT_COORDINATE(moveTo)
@@ -231,7 +242,6 @@ class PlayArea extends VuexModule {
   async moveRight() {
     const moveTo: Point = {x: this.currentMino.x + 1, y: this.currentMino.y}
     if (!await this.canMove(moveTo)) {
-      this.DRAW_MINO()
       return
     }
     this.MOVE_ABSOLUTE_CURRENT_COORDINATE(moveTo)
@@ -248,7 +258,6 @@ class PlayArea extends VuexModule {
       this.DRAW_MINO()
       return
     }
-    this.DRAW_MINO()
     await this.deleteLine()
   }
   /**
@@ -258,7 +267,6 @@ class PlayArea extends VuexModule {
   async moveDrop() {
     const moveTo: Point = {x: this.currentMino.x, y: this.playArea.length - 2}
     while (!await this.canMove(moveTo)) {
-      this.DRAW_MINO()
       moveTo.y--
       if (moveTo.y === 0) {
         return
@@ -295,7 +303,7 @@ class PlayArea extends VuexModule {
    * ライン消去処理を行う
    */
   @Action
-  deleteLine() {
+  async deleteLine() {
     // ブロックで埋められていたので、ラインを消し、次のミノを取り出す操作を実行する。
     const delIndex: number[] = []
     for (let i = this.playArea.length - 2; i > 0; i--) {
@@ -313,6 +321,7 @@ class PlayArea extends VuexModule {
     this.INIT_CURRENT_COORDINATE()
     this.DEQUEUE_NEXT_MINO_LIST()
     this.DRAW_MINO()
+
   }
 }
 export default getModule(PlayArea);

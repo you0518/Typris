@@ -24,6 +24,7 @@
             stroke="gray"
             stroke-width="1")
     test
+    div {{gameOver}}
 </template>
 <script lang="ts">
 import Vue from 'vue'
@@ -53,6 +54,9 @@ export default Vue.extend({
     },
     colorList(): string[] {
       return PlayAreaModule.getColorList
+    },
+    gameOver() {
+      return PlayAreaModule.getGameOver
     }
   },
   mounted() {

@@ -5,7 +5,7 @@ export const MinoTemplates: Mino[] = [
     name: "I",
     color: "red",
     blocks: [
-      [ [1, 1, 1, 1] ],
+      [ [1, 1, 1, 1,] ],
       [
         [1],
         [1],

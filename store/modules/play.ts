@@ -114,7 +114,7 @@ class PlayArea extends VuexModule {
     const pointX = this.currentMino.x
     const pointY = this.currentMino.y
     const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
-    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate % currentMinoTemplate.blocks.length]
+    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
     for (let y = 0; y < minoBlock.length; y++) {
       const xLength = minoBlock[y].length
       for (let x = 0; x < xLength; x++) {
@@ -134,9 +134,24 @@ class PlayArea extends VuexModule {
     this.currentMino.rotate = (this.currentMino.rotate + 1) % MinoTemplates[this.currentMino.minoType].blocks.length
   }
 
+  /**
+   * 引数に指定した行を削除し、その分空行を追加する
+   */
+  @Mutation
+  private DELETE_PUSH_PLAY_AREA_LINE(lineIndex: number[]) {
+    const playArea = this.playArea
+    const area: number[] = (new Array(this.maxWidth)).fill(0);
+    area[0] = area[area.length - 1] = -1
+    lineIndex.forEach((el, index) => {
+      playArea.splice(el + index, 1)
+      playArea.splice(1, 0, area)
+    })
+    this.playArea = [...playArea]
+  }
+
   @Action
   initNextMinoList() {
-    const minoList = [6, 6, 6, 6, 1, 2, 0, 4, 5, 6, 2]
+    const minoList = [0, 0, 1, 0, 1, 2, 0, 4, 5, 6, 2]
     this.SET_NEXT_MINO_LIST(minoList)
   }
 
@@ -167,6 +182,9 @@ class PlayArea extends VuexModule {
         }
         xLength++
       }
+      if (xLength >= yLength) {
+        continue
+      }
       if (this.playArea[this.currentMino.y + y][pointX + xLength] !== 0) {
         return
       }
@@ -193,6 +211,9 @@ class PlayArea extends VuexModule {
           break
         }
         xLength--
+      }
+      if (xLength === 0) {
+        continue;
       }
       if (this.playArea[this.currentMino.y + y][pointX + xLength - 1] !== 0) {
         return
@@ -227,7 +248,20 @@ class PlayArea extends VuexModule {
       }
       // 進行方向がすでにブロックで埋められているかを判定する
       if (this.playArea[pointY + yLength - 1][this.currentMino.x + x] !== 0) {
-        // ブロックで埋められていたので、次のミノを取り出す操作を実行する。
+        // ブロックで埋められていたので、ラインを消し、次のミノを取り出す操作を実行する。
+        const delIndex: number[] = []
+        for (let i = this.playArea.length - 2; i > 0; i--) {
+          if (this.playArea[i].every(el => el > 0 || el === -1)) {
+            delIndex.push(i)
+          }
+          // これ以上行が埋まっていないため。
+          if (this.playArea[i].every(el => el <= 0)) {
+            break;
+          }
+        }
+        if (delIndex.length !== 0) {
+          this.DELETE_PUSH_PLAY_AREA_LINE(delIndex)
+        }
         this.INIT_CURRENT_COORDINATE()
         this.DEQUEUE_NEXT_MINO_LIST()
         this.DRAW_MINO()

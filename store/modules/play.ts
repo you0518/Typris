@@ -3,6 +3,7 @@ import {MinoTemplates} from '~/types/MinoTemplates'
 import shuffle from '@/plugins/shuffle'
 import store from '../store'
 
+
 export interface CurrentMinoState extends Point {
   /**
    * MinoTemplatesのインデックス番号
@@ -20,6 +21,8 @@ export interface Point {
   x: number
   y: number
 }
+
+
 @Module({dynamic: true, name: 'PlayArea', store})
 class PlayArea extends VuexModule {
   public maxWidth: number = 10 + 2
@@ -116,14 +119,14 @@ class PlayArea extends VuexModule {
   }
 
   /**
-   * 現在のミノ位置から相対的に移動する
-   * @param x 相対位置
-   * @param y 相対位置
+   * 現在のミノ位置から絶対的に移動する
+   * @param x 絶対位置
+   * @param y 絶対位置
    */
   @Mutation
-  private MOVE_RELATIVE_CURRENT_COORDINATE(point: Point) {
-    this.currentMino.x += point.x
-    this.currentMino.y += point.y
+  private MOVE_ABSOLUTE_CURRENT_COORDINATE(point: Point) {
+    this.currentMino.x = point.x
+    this.currentMino.y = point.y
   }
 
   /**
@@ -176,11 +179,6 @@ class PlayArea extends VuexModule {
   }
 
   @Action
-  initNextMinoList() {
-    
-  }
-
-  @Action
   startPlay() {
     shuffle(this.shuffleMinoList)
     const minoList = this.shuffleMinoList.splice(4)
@@ -191,36 +189,39 @@ class PlayArea extends VuexModule {
   }
 
   /**
+ * 指定した座標へミノが移動可能かどうかを判定する
+ * @param moveTo 移動先座標（絶対）
+ */
+  @Action
+  canMove(moveTo: Point) {
+    this.DRAW_MINO(true)
+    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
+    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
+    const yLength = minoBlock.length
+    for (let y = 0; y < yLength; y++) {
+      const xLength = minoBlock[y].length
+      for (let x = 0; x < xLength; x++) {
+        if (minoBlock[y][x] === 0) {
+          continue
+        }
+        if (this.playArea[moveTo.y + y][moveTo.x + x] !== 0) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+  /**
    * 操作中のミノを左隣へ移動させる。
    */
   @Action
   async moveLeft() {
-    const moveTo: Point = {x: -1, y: 0}
-    const pointX = this.currentMino.x + moveTo.x
-    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
-    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
-    for (let y = 0; y < minoBlock.length; y++) {
-      // ミノのx方向で一番長い部分のみを移動可能判定の対象とする
-      // くぼみに入れる時とかに必要な判定
-      let xLength = 0
-      const yLength = minoBlock[y].length
-      while (xLength < yLength) {
-        if (minoBlock[y][xLength] > 0) {
-          break
-        }
-        xLength++
-      }
-      if (xLength >= yLength) {
-        continue
-      }
-
-      // 遷移先が埋まっている場合、移動処理を終了
-      if (this.playArea[this.currentMino.y + y][pointX + xLength] !== 0) {
-        return
-      }
+    const moveTo: Point = {x: this.currentMino.x - 1, y: this.currentMino.y}
+    if (!await this.canMove(moveTo)) {
+      this.DRAW_MINO()
+      return
     }
-    this.DRAW_MINO(true)
-    this.MOVE_RELATIVE_CURRENT_COORDINATE(moveTo)
+    this.MOVE_ABSOLUTE_CURRENT_COORDINATE(moveTo)
     this.DRAW_MINO()
   }
   /**
@@ -228,80 +229,44 @@ class PlayArea extends VuexModule {
    */
   @Action
   async moveRight() {
-    const moveTo: Point = {x: 1, y: 0}
-    const pointX = this.currentMino.x + moveTo.x
-    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
-    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
-    // 進行方向がすでにブロックで埋められているかを判定する
-    for (let y = 0; y < minoBlock.length; y++) {
-      // ミノのx方向で一番長い部分のみを移動可能判定の対象とする
-      let xLength = minoBlock[y].length
-      while (xLength > 0) {
-        if (minoBlock[y][xLength - 1] > 0) {
-          break
-        }
-        xLength--
-      }
-      if (xLength === 0) {
-        continue;
-      }
-
-      if (this.playArea[this.currentMino.y + y][pointX + xLength - 1] !== 0) {
-        return
-      }
+    const moveTo: Point = {x: this.currentMino.x + 1, y: this.currentMino.y}
+    if (!await this.canMove(moveTo)) {
+      this.DRAW_MINO()
+      return
     }
-    this.DRAW_MINO(true)
-    this.MOVE_RELATIVE_CURRENT_COORDINATE(moveTo)
+    this.MOVE_ABSOLUTE_CURRENT_COORDINATE(moveTo)
     this.DRAW_MINO()
   }
   /**
    * 操作ミノを下へ移動させる
    */
   @Action
-  moveDown() {
-    const moveTo: Point = {x: 0, y: 1}
-    const pointY = this.currentMino.y + moveTo.y
-    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
-    const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
-    const minoXLength = minoBlock[0].length
-    for (let x = 0; x < minoXLength; x++ ) {
-      // ミノのy方向で一番長い部分のみを移動可能判定の対象とする
-      let yLength = minoBlock.length
-      while (yLength > 0) {
-        if (minoBlock[yLength - 1][x] > 0) {
-          break
-        }
-        yLength--
-      }
-      // ミノのy方向にブロックがないため、判定から除外する。（主にト型のミノに対する判定)
-      if (yLength === 0) {
-        continue
-      }
-      // 進行方向がすでにブロックで埋められているかを判定する
-      if (this.playArea[pointY + yLength - 1][this.currentMino.x + x] !== 0) {
-        // ブロックで埋められていたので、ラインを消し、次のミノを取り出す操作を実行する。
-        const delIndex: number[] = []
-        for (let i = this.playArea.length - 2; i > 0; i--) {
-          if (this.playArea[i].every(el => el > 0 || el === -1)) {
-            delIndex.push(i)
-          }
-          // これ以上行が埋まっていないため。
-          if (this.playArea[i].every(el => el <= 0)) {
-            break;
-          }
-        }
-        if (delIndex.length !== 0) {
-          this.DELETE_PUSH_PLAY_AREA_LINE(delIndex)
-        }
-        this.INIT_CURRENT_COORDINATE()
-        this.DEQUEUE_NEXT_MINO_LIST()
-        this.DRAW_MINO()
+  async moveDown() {
+    const moveTo: Point = {x: this.currentMino.x, y: this.currentMino.y + 1}
+    if (await this.canMove(moveTo)) {
+      this.MOVE_ABSOLUTE_CURRENT_COORDINATE(moveTo)
+      this.DRAW_MINO()
+      return
+    }
+    this.DRAW_MINO()
+    await this.deleteLine()
+  }
+  /**
+   * 操作ミノを落下させる
+   */
+  @Action
+  async moveDrop() {
+    const moveTo: Point = {x: this.currentMino.x, y: this.playArea.length - 2}
+    while (!await this.canMove(moveTo)) {
+      this.DRAW_MINO()
+      moveTo.y--
+      if (moveTo.y === 0) {
         return
       }
     }
-    this.DRAW_MINO(true)
-    this.MOVE_RELATIVE_CURRENT_COORDINATE(moveTo)
+    this.MOVE_ABSOLUTE_CURRENT_COORDINATE(moveTo)
     this.DRAW_MINO()
+    await this.deleteLine()
   }
   /**
    * 操作ミノを回転させる
@@ -324,6 +289,29 @@ class PlayArea extends VuexModule {
       }
     }
     this.SET_ROTATE()
+    this.DRAW_MINO()
+  }
+   /**
+   * ライン消去処理を行う
+   */
+  @Action
+  deleteLine() {
+    // ブロックで埋められていたので、ラインを消し、次のミノを取り出す操作を実行する。
+    const delIndex: number[] = []
+    for (let i = this.playArea.length - 2; i > 0; i--) {
+      if (this.playArea[i].every(el => el > 0 || el === -1)) {
+        delIndex.push(i)
+      }
+      // これ以上行が埋まっていないため。
+      if (this.playArea[i].every(el => el <= 0)) {
+        break;
+      }
+    }
+    if (delIndex.length !== 0) {
+      this.DELETE_PUSH_PLAY_AREA_LINE(delIndex)
+    }
+    this.INIT_CURRENT_COORDINATE()
+    this.DEQUEUE_NEXT_MINO_LIST()
     this.DRAW_MINO()
   }
 }

@@ -8,7 +8,6 @@
       b-button(@click="down" variant="primary") ↓
     div.m-1
       b-button(@click="auto" variant="info") AUTO
-      b-button.ml-1(@click="start") 次の
 </template>
 
 <script lang="ts">
@@ -18,9 +17,6 @@ import PlayAreaModule from '@/store/modules/play'
 
 export default Vue.extend({
   methods: {
-    start() {
-      PlayAreaModule.startPlay()
-    },
     right() {
       PlayAreaModule.moveRight()
     },

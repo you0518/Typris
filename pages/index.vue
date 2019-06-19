@@ -1,6 +1,7 @@
 <template lang="pug">
-  .typris
+  .typris.d-flex
     play-area
+    next-mino
 </template>
 <script lang="ts">
 import Vue from 'vue'

@@ -27,7 +27,7 @@ class PlayArea extends VuexModule {
   private playArea : number[][] = this.InitPlayArea()
   // ミノの開始基準点
   private startPoint: Point = {
-    x: 6,
+    x: 5,
     y: 1,
   }
   // 現在の描画エリア上のミノの座標
@@ -58,6 +58,21 @@ class PlayArea extends VuexModule {
 
   get getPlayArea(): number[][] {
     return this.playArea
+  }
+
+  /**
+   * 次のミノ一覧をブロックで返す
+   */
+  get getNextMinoBlockList(): number[][][] {
+    return this.nextMinoList.map(el => {
+      return MinoTemplates[el].blocks[0]
+    })
+  }
+
+  get getColorList(): string[] {
+    return ["white", ...MinoTemplates.map(el => {
+      return el.color
+    })]
   }
 
   /** 

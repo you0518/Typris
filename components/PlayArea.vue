@@ -14,6 +14,7 @@
             :fill="getColor(mino)"
             stroke="gray"
             stroke-width="1")
+          //- 壁の描画
           rect(v-else
             :y="i * blockSize"
             :x="j * blockSize"
@@ -49,34 +50,19 @@ export default Vue.extend({
     playArea(): number[][] {
       // 直接importしたものをsvgでつかうと、cannot find PlayAreaModuleと言われてしまうため。
       return PlayAreaModule.getPlayArea
+    },
+    colorList(): string[] {
+      return PlayAreaModule.getColorList
     }
   },
   mounted() {
-    PlayAreaModule.initNextMinoList()
     PlayAreaModule.startPlay()
   },
   methods: {
     getColor(index: number): string {
-      switch (index) {
-        case 0:
-          return 'white'
-        case 1:
-          return 'red'
-        case 2:
-          return 'blue'
-        case 3:
-          return 'green'
-        case 4:
-          return 'yellow'
-        case 5:
-          return 'orange'
-        case 6:
-          return 'purple'
-        case 7:
-          return 'pink'
-        default:
-          return 'black'
-      }
+      return index >= 0 && index < this.colorList.length
+        ? this.colorList[index]
+        : 'black'
     }
   }
 })

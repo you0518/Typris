@@ -1,5 +1,5 @@
 <template lang="pug">
-  .play-area
+  .play-area.d-flex.flex-column.align-items-center
     svg(xmlns="http://www.w3.org/2000/svg"
       :width="playAreaWidth"
       :height="playAreaHeight"
@@ -12,7 +12,7 @@
             :width="blockSize"
             :height="blockSize"
             :fill="getColor(mino)"
-            stroke="black"
+            stroke="gray"
             stroke-width="1")
           rect(v-else
             :y="i * blockSize"
@@ -20,7 +20,7 @@
             :width="blockSize"
             :height="blockSize"
             fill="brown"
-            stroke="black"
+            stroke="gray"
             stroke-width="1")
     test
 </template>
@@ -36,7 +36,7 @@ export default Vue.extend({
   data() {
     return {
       // 1マスのサイズ[px]
-      blockSize: 40
+      blockSize: 35
     }
   },
   computed: {

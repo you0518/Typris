@@ -7,6 +7,7 @@
     div.m-1
       b-button(@click="down" variant="primary") ↓
     div.m-1
+      b-button(@click="auto" variant="info") AUTO
       b-button.ml-1(@click="start") 次の
 </template>
 
@@ -28,7 +29,9 @@ export default Vue.extend({
     },
     down() {
       PlayAreaModule.moveDown()
-      // setInterval(() => PlayAreaModule.moveDown(), 1000)
+    },
+    auto() {
+      setInterval(() => PlayAreaModule.moveDown(), 100)
     },
     rotate() {
       PlayAreaModule.rotate()

@@ -1,8 +1,8 @@
 import { Mutation, MutationAction, Action, VuexModule, getModule, Module } from "vuex-module-decorators";
 import {MinoTemplates} from '~/types/MinoTemplates'
-import MinoType from '@/types/MinoType'
+import shuffle from '@/plugins/shuffle'
 import store from '../store'
-import Vuex from 'vuex'
+
 export interface CurrentMinoState extends Point {
   /**
    * MinoTemplatesのインデックス番号
@@ -36,7 +36,10 @@ class PlayArea extends VuexModule {
     rotate: 0,
     minoType: -1
   }
-  private nextMinoList: number[] = new Array(7)
+  // 次に表示操作するミノ一覧（描画される
+  private nextMinoList: number[] = []
+  // ランダムでミノを取り出すためのやつ
+  private shuffleMinoList: number[] = [...Array(MinoTemplates.length).keys()]
 
   /**
    * ミノ表示領域を、壁を-1で、ミノ無しを0で初期化する
@@ -72,12 +75,20 @@ class PlayArea extends VuexModule {
     this.nextMinoList.push(mino)
   }
   /** 
-   * 次のミノ配列の先頭からミノを取り出す
+   * 次のミノ配列の先頭からミノを取り出し、新しいミノをpushする
    */
   @Mutation
   private DEQUEUE_NEXT_MINO_LIST() {
     this.currentMino.minoType = this.nextMinoList[0]
     this.nextMinoList.shift()
+
+    this.nextMinoList.push(this.shuffleMinoList[0])
+    this.shuffleMinoList.shift()
+    if (this.shuffleMinoList.length === 0) {
+      this.shuffleMinoList = [...Array(MinoTemplates.length).keys()]
+      shuffle(this.shuffleMinoList)
+    }
+    this.currentMino.rotate = 0
   }
 
   /**
@@ -151,12 +162,14 @@ class PlayArea extends VuexModule {
 
   @Action
   initNextMinoList() {
-    const minoList = [0, 0, 1, 0, 1, 2, 0, 4, 5, 6, 2]
-    this.SET_NEXT_MINO_LIST(minoList)
+    
   }
 
   @Action
   startPlay() {
+    shuffle(this.shuffleMinoList)
+    const minoList = this.shuffleMinoList.splice(4)
+    this.SET_NEXT_MINO_LIST(minoList)
     this.DRAW_MINO(true)
     this.DEQUEUE_NEXT_MINO_LIST()
     this.DRAW_MINO()
@@ -185,6 +198,8 @@ class PlayArea extends VuexModule {
       if (xLength >= yLength) {
         continue
       }
+
+      // 遷移先が埋まっている場合、移動処理を終了
       if (this.playArea[this.currentMino.y + y][pointX + xLength] !== 0) {
         return
       }
@@ -215,6 +230,7 @@ class PlayArea extends VuexModule {
       if (xLength === 0) {
         continue;
       }
+
       if (this.playArea[this.currentMino.y + y][pointX + xLength - 1] !== 0) {
         return
       }

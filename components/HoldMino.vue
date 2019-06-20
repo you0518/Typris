@@ -6,6 +6,7 @@
       :width="holdMinoAreaWidth"
       :height="holdMinoAreaHeight"
       :viewBox="`0 0 ${holdMinoAreaWidth} ${holdMinoAreaHeight}`")
+      //- 外枠の描画
       rect(
         :width="blockSize * width"
         :height="blockSize * height"
@@ -19,8 +20,8 @@
             :x="(k + 1) * blockSize"
             :width="blockSize"
             :height="blockSize"
-            :fill="getColor(mino)"
-            stroke="gray"
+            :fill="colorList[mino]"
+            :stroke="strokeColorList[mino]"
             stroke-width="1")
           
 </template>
@@ -49,13 +50,9 @@ export default Vue.extend({
     },
     colorList(): string[] {
       return PlayAreaModule.getColorList
-    }
-  },
-  methods: {
-    getColor(index: number): string {
-      return index >= 0 && index < this.colorList.length
-        ? this.colorList[index]
-        : 'black'
+    },
+    strokeColorList() {
+      return PlayAreaModule.getStrokeColorList
     }
   }
 })

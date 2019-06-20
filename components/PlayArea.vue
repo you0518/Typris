@@ -11,17 +11,19 @@
             :x="j * blockSize"
             :width="blockSize"
             :height="blockSize"
-            :fill="getColor(point.mino)"
-            stroke="gray"
-            stroke-width="1")
+            :fill="getMinoColor(point.mino, j)"
+            :stroke="strokeColorList[point.mino]"
+            paint-order="stroke"
+            stroke-width="2")
           //- 壁の描画
           rect(v-else
             :y="i * blockSize"
             :x="j * blockSize"
             :width="blockSize"
             :height="blockSize"
+            paint-order="stroke"
             fill="brown"
-            stroke="gray"
+            stroke="white"
             stroke-width="1")
     test
     div {{gameOver}}
@@ -38,7 +40,18 @@ export default Vue.extend({
   data() {
     return {
       // 1マスのサイズ[px]
-      blockSize: 35
+      blockSize: 35,
+      colColor: [
+        '#FFEBEE',
+        '#F3E5F5',
+        '#E8EAF6',
+        '#E1F5FE',
+        '#E8F5E9',
+        '#F9FBE7',
+        '#FFF3E0',
+        '#FBE9E7',
+        '#EFEBE9'
+      ]
     }
   },
   computed: {
@@ -55,6 +68,9 @@ export default Vue.extend({
     colorList() {
       return PlayAreaModule.getColorList
     },
+    strokeColorList() {
+      return PlayAreaModule.getStrokeColorList
+    },
     gameOver() {
       return PlayAreaModule.getGameOver
     }
@@ -63,10 +79,10 @@ export default Vue.extend({
     PlayAreaModule.startPlay()
   },
   methods: {
-    getColor(index: number) {
-      return index >= 0 && index < this.colorList.length
-        ? this.colorList[index]
-        : 'black'
+    getMinoColor(minoType: number, col: number) {
+      return minoType > 0 && minoType < this.strokeColorList.length
+        ? this.colorList[minoType]
+        : this.colColor[col % this.colColor.length]
     }
   }
 })

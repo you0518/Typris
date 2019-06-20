@@ -3,7 +3,8 @@ import Mino from "~/types/MinoType"
 export const MinoTemplates: Mino[] = [
   {
     name: "I",
-    color: "red",
+    color: "#D50000",
+    stroke: "#B71C1C",
     blocks: [
       [ [1, 1, 1, 1,] ],
       [
@@ -17,7 +18,8 @@ export const MinoTemplates: Mino[] = [
 
   {
     name: "O",
-    color: "gold",
+    color: "#AA00FF",
+    stroke: "#4A148C",
     blocks: [
       [
         [2, 2],
@@ -28,7 +30,8 @@ export const MinoTemplates: Mino[] = [
 
   {
     name: "S",
-    color: "magenta",
+    color: "#304FFE",
+    stroke: "#1A237E",
     blocks: [
       [
         [0, 3, 3],
@@ -44,7 +47,8 @@ export const MinoTemplates: Mino[] = [
 
   {
     name: "Z",
-    color: "lawngreen",
+    color: "#00B8D4",
+    stroke: "#006064",
     blocks: [
       [
         [4, 4, 0],
@@ -60,57 +64,60 @@ export const MinoTemplates: Mino[] = [
 
   {
     name: "J",
-    color: "blue",
+    color: "#00C853",
+    stroke: "#1B5E20",
     blocks: [
       [
         [5, 5, 5],
         [0, 0, 5]
       ],
       [
-        [5, 5],
-        [5, 0],
-        [5, 0]
+        [0, 5],
+        [0, 5],
+        [5, 5]
       ],
       [
         [5, 0, 0],
         [5, 5, 5]
       ],
       [
-        [0, 5],
-        [0, 5],
-        [5, 5]
+        [5, 5],
+        [5, 0],
+        [5, 0]
       ]
     ]
   },
 
   {
     name: "L",
-    color: "darkorange",
+    color: "#FFAB00",
+    stroke: "#FF6F00",
     blocks: [
       [
         [6, 6, 6],
         [6, 0, 0]
       ],
       [
-        [6, 0],
-        [6, 0],
-        [6, 6]
+        [6, 6],
+        [0, 6],
+        [0, 6]
       ],
       [
         [0, 0, 6],
         [6, 6, 6]
       ],
       [
-        [6, 6],
-        [0, 6],
-        [0, 6]
+        [6, 0],
+        [6, 0],
+        [6, 6]
       ]
     ]
   },
 
   {
     name: "T",
-    color: "deepskyblue",
+    color: "#FFD600",
+    stroke: "#F57F17",
     blocks: [
       [
         [0, 7, 0],
@@ -119,7 +126,7 @@ export const MinoTemplates: Mino[] = [
       ],
       [
         [0, 7, 0],
-        [7, 7, 0],
+        [0, 7, 7],
         [0, 7, 0]
       ],
       [
@@ -129,7 +136,7 @@ export const MinoTemplates: Mino[] = [
       ],
       [
         [0, 7, 0],
-        [0, 7, 7],
+        [7, 7, 0],
         [0, 7, 0]
       ]
     ]

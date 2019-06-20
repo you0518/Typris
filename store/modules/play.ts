@@ -116,6 +116,13 @@ class PlayArea extends VuexModule {
     })]
   }
 
+  
+  get getStrokeColorList() {
+    return ["white", ...MinoTemplates.map(el => {
+      return el.stroke
+    })]
+  }
+
   get getGameOver() {
     return this.isGameOver
   }
@@ -168,7 +175,7 @@ class PlayArea extends VuexModule {
     for (let y = 0; y < minoBlock.length; y++) {
       const xLength = minoBlock[y].length
       for (let x = 0; x < xLength; x++) {
-        // 次のミノ取り出し時に、遷移元のブロックを消しちゃだめ。
+        // 次のミノ取り出し時には遷移元ミノは確定したので消しちゃだめ。
         if (playArea[currentY + y][currentX + x].confirm) {
           continue
         }
@@ -207,13 +214,18 @@ class PlayArea extends VuexModule {
     const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
     const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
     // ミノ回転配列を一巡させるために、ミノ回転配列の長さで割ったあまりが必要になる。
-    this.currentMino.rotate = (this.currentMino.rotate + 1) % MinoTemplates[this.currentMino.minoType].blocks.length
-    const rotatedMinoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
+    const rotate = (this.currentMino.rotate + 1) % MinoTemplates[this.currentMino.minoType].blocks.length
+    const rotatedMinoBlock = currentMinoTemplate.blocks[rotate]
+    this.currentMino.rotate = rotate
 
     // 遷移元のミノを消す
     for (let y = 0; y < minoBlock.length; y++) {
       const xLength = minoBlock[y].length
       for (let x = 0; x < xLength; x++) {
+        // ミノの空欄部分で、playAreaを消しちゃだめ
+        if (minoBlock[y][x] === 0) {
+          continue
+        }
         playArea[currentY + y][currentX + x] = deepCopy(this.empty)
       }
     }
@@ -222,6 +234,10 @@ class PlayArea extends VuexModule {
     for (let y = 0; y < rotatedMinoBlock.length; y++) {
       const xLength = rotatedMinoBlock[y].length
       for (let x = 0; x < xLength; x++) {
+        // ミノの空欄部分で、playAreaを消しちゃだめ
+        if (rotatedMinoBlock[y][x] === 0) {
+          continue
+        }
         playArea[currentY + y][currentX + x].mino   = rotatedMinoBlock[y][x]
       }
     }
@@ -246,7 +262,7 @@ class PlayArea extends VuexModule {
       playArea.splice(el + index, 1)
       playArea.splice(1, 0, deepCopy(row))
     })
-    this.score = (this.baseScore * lineIndex.length) * (1 + (lineIndex.length - 1) * 0.1)
+    this.score += (this.baseScore * lineIndex.length) * (1 + (lineIndex.length - 1) * 0.1)
     this.playArea = [...playArea]
   }
 
@@ -394,6 +410,9 @@ class PlayArea extends VuexModule {
     // 回転方向がすでにブロックで埋められているかを判定する
     for (let y = 0; y < rotatedMinoBlock.length; y++) {
       for (let x = 0; x < rotatedMinoBlock[y].length; x++) {
+        if (rotatedMinoBlock[y][x] === 0) {
+          continue
+        }
         const point = this.playArea[this.currentMino.y + y][this.currentMino.x + x]
         if (point.confirm && point.mino !== 0) {
           return

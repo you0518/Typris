@@ -35,7 +35,7 @@ export default Vue.extend({
     return {
       // 1マスのサイズ[px]
       blockSize: 25,
-      width: 5,
+      width: 6,
       height: 4
     }
   },

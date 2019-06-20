@@ -1,6 +1,8 @@
 <template lang="pug">
   .typris.d-flex
-    hold-mino
+    div
+      score
+      hold-mino
     play-area
     next-mino
 </template>

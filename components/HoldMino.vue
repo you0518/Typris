@@ -6,6 +6,12 @@
       :width="holdMinoAreaWidth"
       :height="holdMinoAreaHeight"
       :viewBox="`0 0 ${holdMinoAreaWidth} ${holdMinoAreaHeight}`")
+      rect(
+        :width="blockSize * width"
+        :height="blockSize * height"
+        fill="white"
+        stroke="black"
+        stroke-width="1")
       template(v-for="(minoBlockRow, j) in holdMinoBlock")
         template(v-for="(mino, k) in minoBlockRow")
           rect(v-if="mino!==0"
@@ -27,7 +33,7 @@ export default Vue.extend({
     return {
       // 1マスのサイズ[px]
       blockSize: 25,
-      width: 5,
+      width: 6,
       height: 4
     }
   },

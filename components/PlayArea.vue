@@ -51,7 +51,7 @@ export default Vue.extend({
   data() {
     return {
       // 1マスのサイズ[px]
-      blockSize: 30,
+      blockSize: 20,
       strokeWidth: 2,
       colColor: [
         '#FFEBEE',

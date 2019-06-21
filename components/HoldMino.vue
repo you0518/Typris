@@ -33,7 +33,7 @@ export default Vue.extend({
   data() {
     return {
       // 1マスのサイズ[px]
-      blockSize: 35,
+      blockSize: 20,
       strokeWidth: 2,
       // ホールドエリアの幅ブロック数
       width: 6,

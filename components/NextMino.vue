@@ -35,7 +35,7 @@ export default Vue.extend({
   data() {
     return {
       // 1マスのサイズ[px]
-      blockSize: 25,
+      blockSize: 20,
       strokeWidth: 2,
       // 次ミノ1エリアの幅ブロック数
       width: 6,

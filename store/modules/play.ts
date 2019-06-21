@@ -69,8 +69,12 @@ class PlayArea extends VuexModule {
   private isStarted = false
   // スコア
   private score: number = 0
+  // レベル
+  private level: number = 0
   // 1ライン消去における得点
   private baseScore: number = 1000
+  // 何点ごとにレベルを上げるか
+  private baseLevel: number = 5000
 
   /**
    * ミノ表示領域を、壁を-1で、ミノ無しを0で初期化する
@@ -139,6 +143,10 @@ class PlayArea extends VuexModule {
 
   get getScore() {
     return this.score
+  }
+
+  get getLevel() {
+    return this.level
   }
   /** 
    * 次のミノ配列を上書きする
@@ -260,6 +268,24 @@ class PlayArea extends VuexModule {
   }
 
   /**
+   * スコアを引数の値に設定する。スコアに応じてレベルも変化する。
+   */
+  @Mutation
+  private SET_SCORE(score: number) {
+    this.score = score
+    this.level = Math.ceil(this.score / this.baseLevel)
+  }
+
+  /**
+   * スコアに引数の値を加算する。スコアに応じてレベルも変化する。
+   */
+  @Mutation
+  private ADD_SCORE(lineLength: number) {
+    this.score += (this.baseScore * lineLength) * (1 + (lineLength - 1) * 0.1)
+    this.level = Math.ceil(this.score / this.baseLevel)
+  }
+
+  /**
    * 引数に指定した行を削除し、その分空行を追加する
    */
   @Mutation
@@ -277,7 +303,6 @@ class PlayArea extends VuexModule {
       playArea.splice(el + index, 1)
       playArea.splice(1, 0, deepCopy(row))
     })
-    this.score += (this.baseScore * lineIndex.length) * (1 + (lineIndex.length - 1) * 0.1)
     this.playArea = [...playArea]
   }
 
@@ -303,8 +328,8 @@ class PlayArea extends VuexModule {
   }
 
   @Mutation
-  private SET_GAME_OVER() {
-    this.isGameOver = true
+  private SET_GAME_OVER(gameOver: boolean) {
+    this.isGameOver = gameOver
   }
 
   /**
@@ -331,12 +356,15 @@ class PlayArea extends VuexModule {
       }
     }
   }
-  
 
-
+  /**
+   * ゲームを開始する
+   */
   @Action
   startPlay() {
     this.SET_STARTED(true)
+    this.SET_GAME_OVER(false)
+    this.SET_SCORE(0)
     shuffle(this.shuffleMinoList)
     const minoList = this.shuffleMinoList.splice(4)
     this.SET_NEXT_MINO_LIST(minoList)
@@ -345,8 +373,7 @@ class PlayArea extends VuexModule {
   }
 
 /**
- * 指定した座標へミノが移動可能かどうかを判定する
- * 移動可能の時は、元のミノは削除済みである
+ * 現在操作中のミノが指定した座標へ移動可能かどうかを判定する
  * @param moveTo 移動先座標（絶対）
  */
   @Action
@@ -397,7 +424,6 @@ class PlayArea extends VuexModule {
   async moveDown() {
     const moveTo: Point = {x: this.currentMino.x, y: this.currentMino.y + 1}
     if (await this.canMove(moveTo)) {
-      console.log("yea  ")
       this.MOVE_TO(moveTo)
       return
     }
@@ -458,13 +484,14 @@ class PlayArea extends VuexModule {
     }
     if (delIndex.length !== 0) {
       this.DELETE_PUSH_PLAY_AREA_LINE(delIndex)
+      this.ADD_SCORE(delIndex.length)
     }
     this.DEQUEUE_NEXT_MINO_LIST()
     this.MOVE_TO(this.startPoint)
+
     if (!await this.canMove(this.startPoint)) {
-      this.SET_GAME_OVER()
+      this.SET_GAME_OVER(true)
     }
-    
   }
 
   @Action

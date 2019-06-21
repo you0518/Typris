@@ -37,7 +37,6 @@
             :stroke="strokeColorList[point.mino]"
             :stroke-width="strokeWidth")
     test
-    div {{gameOver}}
 </template>
 <script lang="ts">
 import Vue from 'vue'
@@ -50,8 +49,14 @@ export default Vue.extend({
   },
   data() {
     return {
+      // タイマー番号
+      interval: 0,
+      // ゲーム開始時のミノ落下時間[ms]
+      speed: 1000,
+      // 上げてくスピードの段階
+      baseSpeed: 0.8,
       // 1マスのサイズ[px]
-      blockSize: 20,
+      blockSize: 30,
       strokeWidth: 2,
       colColor: [
         '#FFEBEE',
@@ -97,10 +102,28 @@ export default Vue.extend({
     },
     gameOver() {
       return PlayAreaModule.getGameOver
+    },
+    level(): number {
+      return PlayAreaModule.getLevel
+    }
+  },
+  watch: {
+    gameOver() {
+      window.clearInterval(this.interval)
+    },
+    level() {
+      window.clearInterval(this.interval)
+      this.interval = window.setInterval(
+        () => PlayAreaModule.moveDown(),
+        this.speed * this.baseSpeed ** this.level
+      )
     }
   },
   mounted() {
-    PlayAreaModule.startPlay()
+    this.interval = window.setInterval(
+      () => PlayAreaModule.moveDown(),
+      this.speed
+    )
   }
 })
 </script>

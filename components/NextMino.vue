@@ -3,13 +3,13 @@
     div
       h2 NEXT
     svg(xmlns="http://www.w3.org/2000/svg"
-      :width="nextMinoAreaWidth"
-      :height="nextMinoAreaHeight"
-      :viewBox="`0 0 ${nextMinoAreaWidth} ${nextMinoAreaHeight}`")
+      :width="MinoAreaWidth"
+      :height="MinoAreaHeight"
+      :viewBox="`0 0 ${MinoAreaWidth} ${MinoAreaHeight}`")
       template(v-for="(minoBlock, i) in nextMinoBlockList")
         //- 外枠を描画
         rect(
-              :y="i * oneNextMinoAreaHeight"
+              :y="i * oneMinoAreaHeight"
               :width="blockSize * width"
               :height="blockSize * height"
               fill="white"
@@ -18,13 +18,13 @@
         template(v-for="(minoBlockRow, j) in minoBlock")
           template(v-for="(mino, k) in minoBlockRow")
             rect(v-if="mino!==0"
-              :y="(j + 1) * blockSize + i * oneNextMinoAreaHeight"
+              :y="(j + 1) * blockSize + i * oneMinoAreaHeight"
               :x="(k + 1) * blockSize"
               :width="blockSize"
               :height="blockSize"
-              :fill="colorList[mino]"
+              :fill="fillColorList[mino]"
               :stroke="strokeColorList[mino]"
-              stroke-width="1")
+              :stroke-width="strokeWidth")
           
 </template>
 
@@ -36,24 +36,27 @@ export default Vue.extend({
     return {
       // 1マスのサイズ[px]
       blockSize: 25,
+      strokeWidth: 2,
+      // 次ミノ1エリアの幅ブロック数
       width: 6,
+      // 次ミノ1エリアの高さブロック数
       height: 4
     }
   },
   computed: {
-    oneNextMinoAreaHeight(): number {
+    oneMinoAreaHeight(): number {
       return this.blockSize * this.height
     },
-    nextMinoAreaWidth(): number {
+    MinoAreaWidth(): number {
       return this.blockSize * this.width
     },
-    nextMinoAreaHeight(): number {
-      return this.oneNextMinoAreaHeight * this.nextMinoBlockList.length
+    MinoAreaHeight(): number {
+      return this.oneMinoAreaHeight * this.nextMinoBlockList.length
     },
     nextMinoBlockList(): number[][][] {
       return PlayAreaModule.getNextMinoBlockList
     },
-    colorList(): string[] {
+    fillColorList(): string[] {
       return PlayAreaModule.getColorList
     },
     strokeColorList() {

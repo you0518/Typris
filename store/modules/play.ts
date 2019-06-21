@@ -66,6 +66,7 @@ class PlayArea extends VuexModule {
   }
   // ゲームオーバー判定
   private isGameOver = false
+  private isStarted = false
   // スコア
   private score: number = 0
   // 1ライン消去における得点
@@ -110,13 +111,18 @@ class PlayArea extends VuexModule {
     })
   }
 
+  /**
+   * ミノの塗りつぶし色一覧
+   */
   get getColorList() {
     return ["white", ...MinoTemplates.map(el => {
       return el.color
     })]
   }
 
-  
+  /**
+   * ミノの枠線色一覧
+   */
   get getStrokeColorList() {
     return ["white", ...MinoTemplates.map(el => {
       return el.stroke
@@ -125,6 +131,10 @@ class PlayArea extends VuexModule {
 
   get getGameOver() {
     return this.isGameOver
+  }
+
+  get isStart() {
+    return this.isStarted
   }
 
   get getScore() {
@@ -136,6 +146,11 @@ class PlayArea extends VuexModule {
   @Mutation
   private SET_NEXT_MINO_LIST(minoList: number[]) {
     this.nextMinoList = minoList
+  }
+
+  @Mutation
+  private SET_STARTED(isStart: boolean) {
+    this.isStarted = isStart
   }
 
   /** 
@@ -321,6 +336,7 @@ class PlayArea extends VuexModule {
 
   @Action
   startPlay() {
+    this.SET_STARTED(true)
     shuffle(this.shuffleMinoList)
     const minoList = this.shuffleMinoList.splice(4)
     this.SET_NEXT_MINO_LIST(minoList)

@@ -3,9 +3,9 @@
     div
       h2 HOLD
     svg(xmlns="http://www.w3.org/2000/svg"
-      :width="holdMinoAreaWidth"
-      :height="holdMinoAreaHeight"
-      :viewBox="`0 0 ${holdMinoAreaWidth} ${holdMinoAreaHeight}`")
+      :width="minoAreaWidth"
+      :height="minoAreaHeight"
+      :viewBox="`0 0 ${minoAreaWidth} ${minoAreaHeight}`")
       //- 外枠の描画
       rect(
         :width="blockSize * width"
@@ -13,16 +13,16 @@
         fill="white"
         stroke="black"
         stroke-width="1")
-      template(v-for="(minoBlockRow, j) in holdMinoBlock")
-        template(v-for="(mino, k) in minoBlockRow")
-          rect(v-if="mino!==0"
+      template(v-for="(row, j) in holdMinoBlock")
+        template(v-for="(point, k) in row")
+          rect(v-if="point!==0"
             :y="(j + 1) * blockSize"
             :x="(k + 1) * blockSize"
             :width="blockSize"
             :height="blockSize"
-            :fill="colorList[mino]"
-            :stroke="strokeColorList[mino]"
-            stroke-width="1")
+            :fill="fillColorList[point]"
+            :stroke="strokeColorList[point]"
+            :stroke-width="strokeWidth")
           
 </template>
 
@@ -33,22 +33,31 @@ export default Vue.extend({
   data() {
     return {
       // 1マスのサイズ[px]
-      blockSize: 25,
+      blockSize: 35,
+      strokeWidth: 2,
+      // ホールドエリアの幅ブロック数
       width: 6,
+      // ホールドエリアの高さブロック数
       height: 4
     }
   },
   computed: {
-    holdMinoAreaWidth(): number {
+    /**
+     * ホールド領域の幅[px]
+     */
+    minoAreaWidth(): number {
       return this.blockSize * this.width
     },
-    holdMinoAreaHeight(): number {
+    /**
+     * ホールド領域の高さ[px]
+     */
+    minoAreaHeight(): number {
       return this.blockSize * this.height
     },
     holdMinoBlock(): number[][] {
       return PlayAreaModule.getHoldMinoBlock
     },
-    colorList(): string[] {
+    fillColorList(): string[] {
       return PlayAreaModule.getColorList
     },
     strokeColorList() {

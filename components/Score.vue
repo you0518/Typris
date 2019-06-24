@@ -1,9 +1,9 @@
 <template lang="pug">
   .score.d-flex.flex-column.align-items-center.m-3
     div
-      h2 SCORE
+      h5 SCORE
     div
-      h3 {{score}}
+      h4 {{score}}
 </template>
 <script lang="ts">
 import Vue from 'vue'

@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    .typris-title(v-if="!started").d-flex.flex-column.align-items-center
+    .typris-title.d-flex.flex-column.align-items-center
       dot-component#typris-title.m-5(
         :blocks="title"
         :strokeWidth=2
@@ -14,29 +14,13 @@
         roundColor="red"
         @click="startPlay"
       )
-    .typris.d-flex(v-else)
-      div
-        score
-        hold-mino
-      play-area
-      next-mino
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import PlayAreaModule from '@/store/modules/play'
-
-import HoldMino from '@/components/HoldMino.vue'
-import NextMino from '@/components/NextMino.vue'
-import PlayArea from '@/components/PlayArea.vue'
-import Score from '@/components/Score.vue'
 import DotComponent from '@/components/DotComponent.vue'
 
 export default Vue.extend({
   components: {
-    HoldMino,
-    NextMino,
-    PlayArea,
-    Score,
     DotComponent
   },
   data() {
@@ -137,14 +121,9 @@ export default Vue.extend({
       ]
     }
   },
-  computed: {
-    started() {
-      return PlayAreaModule.isStart
-    }
-  },
   methods: {
     startPlay() {
-      PlayAreaModule.startPlay()
+      this.$router.push('/play')
     }
   }
 })

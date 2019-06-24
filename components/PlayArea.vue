@@ -36,17 +36,12 @@
             :fill="fillColorList[point.mino]"
             :stroke="strokeColorList[point.mino]"
             :stroke-width="strokeWidth")
-    test
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import PlayAreaModule from '@/store/modules/play'
-import Test from '@/components/Test.vue'
 
 export default Vue.extend({
-  components: {
-    Test
-  },
   data() {
     return {
       // タイマー番号
@@ -56,8 +51,8 @@ export default Vue.extend({
       // 上げてくスピードの段階
       baseSpeed: 0.8,
       // 1マスのサイズ[px]
-      blockSize: 30,
-      strokeWidth: 2,
+      blockSize: 20,
+      strokeWidth: 1,
       colColor: [
         '#FFEBEE',
         '#F3E5F5',
@@ -120,6 +115,7 @@ export default Vue.extend({
     }
   },
   mounted() {
+    PlayAreaModule.startPlay()
     this.interval = window.setInterval(
       () => PlayAreaModule.moveDown(),
       this.speed

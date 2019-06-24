@@ -1,7 +1,7 @@
 <template lang="pug">
   .next-mino.d-flex.flex-column.align-items-center.m-3
     div
-      h2 NEXT
+      h5 NEXT
     svg(xmlns="http://www.w3.org/2000/svg"
       :width="MinoAreaWidth"
       :height="MinoAreaHeight"
@@ -35,8 +35,8 @@ export default Vue.extend({
   data() {
     return {
       // 1マスのサイズ[px]
-      blockSize: 20,
-      strokeWidth: 2,
+      blockSize: 10,
+      strokeWidth: 1,
       // 次ミノ1エリアの幅ブロック数
       width: 6,
       // 次ミノ1エリアの高さブロック数

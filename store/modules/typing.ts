@@ -1,12 +1,11 @@
 import {
   Mutation,
-  MutationAction,
   Action,
   VuexModule,
   getModule,
   Module
 } from 'vuex-module-decorators'
-import { SentenceTemplates } from '~/types/SentenceTemplates'
+import { SentenceTemplates } from '@/types/SentenceTemplates'
 import shuffle from '@/plugins/shuffle'
 import store from '../store'
 import PlayModule from './play'

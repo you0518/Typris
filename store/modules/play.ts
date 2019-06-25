@@ -1,6 +1,5 @@
 import {
   Mutation,
-  MutationAction,
   Action,
   VuexModule,
   getModule,
@@ -471,20 +470,17 @@ class PlayArea extends VuexModule {
    */
   @Action
   rotate() {
-    const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
-    const rotatedMinoBlock =
-      currentMinoTemplate.blocks[
-        (this.currentMino.rotate + 1) % currentMinoTemplate.blocks.length
-      ]
+    const mino = this.currentMino
+    const currentMinoTemplate = MinoTemplates[mino.minoType]
+    const rotateIndex = (mino.rotate + 1) % currentMinoTemplate.blocks.length
+    const rotatedMinoBlock = currentMinoTemplate.blocks[rotateIndex]
     // 回転方向がすでにブロックで埋められているかを判定する
     for (let y = 0; y < rotatedMinoBlock.length; y++) {
       for (let x = 0; x < rotatedMinoBlock[y].length; x++) {
         if (rotatedMinoBlock[y][x] === 0) {
           continue
         }
-        const point = this.playArea[this.currentMino.y + y][
-          this.currentMino.x + x
-        ]
+        const point = this.playArea[mino.y + y][mino.x + x]
         if (point.confirm && point.mino !== 0) {
           return
         }

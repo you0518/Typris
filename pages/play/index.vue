@@ -3,9 +3,9 @@
       div
         score
         hold-mino
+        next-mino
       play-area
-      next-mino
-      typing-field
+      typing-field.ml-2
 </template>
 
 <script lang="ts">

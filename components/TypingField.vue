@@ -1,14 +1,16 @@
 <template lang="pug">
-  b-container.typing-field(fluid)
-    b-row
-      b-col
-        b-form-input(v-model="inputKeys" type="email")
-    b-row(v-for="(choice, index) in choices" :key="choice.operate")
-      b-col.d-flex.flex-column.justify-content-center(cols="2")
-        div.rounded.text-center(:style="{'background-color': choice.fill}") {{choice.operate}}
-      b-col 
-        div {{senTemps[sentenceList[index]].sentence}}
-        div {{senTemps[sentenceList[index]].roman}}
+  .typing-field
+    div
+      b-form-input(v-model="inputKeys")
+    .d-flex(v-for="(choice, index) in choices" :key="choice.operate" :class="{'mb-3': index === 2}")
+      .typing-field-operate.text-center
+        .h-100.rounded.d-flex.flex-column.justify-content-center(:style="{'background-color': choice.fill}")
+          div 
+            b {{choice.operate}}
+      .flex-grow-1 
+        span
+          b {{ senTemps[sentenceList[index]][0] }}
+        span.ml-3 {{ senTemps[sentenceList[index]][1] }}
 
 </template>
 
@@ -22,83 +24,97 @@ export default Vue.extend({
     return {
       inputKeys: '',
       correct: 0,
+      reg: new RegExp(/^[a-zA-Z0-9!-/:-@¥[-`{-~\s]*$/),
       choices: [
         {
-          operate: 'DROP',
-          fill: '#E57373',
-          callback: () => {
-            PlayModule.moveDrop()
-          }
-        },
-        {
-          operate: '＜＜＜＜',
-          fill: '#F06292',
-          callback: async () => {
-            await PlayModule.moveLeft()
-            await PlayModule.moveLeft()
-            await PlayModule.moveLeft()
-            await PlayModule.moveLeft()
-          }
-        },
-        {
-          operate: '＜＜',
-          fill: '#F06292',
-          callback: async () => {
-            await PlayModule.moveLeft()
-            await PlayModule.moveLeft()
-          }
-        },
-        {
-          operate: '＜',
-          fill: '#EC407A',
-          callback: () => {
-            PlayModule.moveLeft()
-          }
-        },
-        {
-          operate: '＞＞＞＞',
-          fill: '#BA68C8',
-          callback: async () => {
-            await PlayModule.moveRight()
-            await PlayModule.moveRight()
-            await PlayModule.moveRight()
-            await PlayModule.moveRight()
-          }
-        },
-        {
-          operate: '＞＞',
-          fill: '#BA68C8',
-          callback: async () => {
-            await PlayModule.moveRight()
-            await PlayModule.moveRight()
-          }
-        },
-        {
-          operate: '＞',
-          fill: '#AB47BC',
-          callback: () => {
-            PlayModule.moveRight()
-          }
-        },
-        {
-          operate: 'Ｖ',
-          fill: '#7986CB',
-          callback: () => {
-            PlayModule.moveDown()
-          }
-        },
-        {
-          operate: '●',
-          fill: '#4DB6AC',
-          callback: () => {
-            PlayModule.rotate()
-          }
-        },
-        {
           operate: 'HOLD',
-          fill: '#81C784',
-          callback: () => {
-            PlayModule.setHold()
+          fill: '#E91E63',
+          callback: async () => {
+            await PlayModule.setHold()
+          }
+        },
+        {
+          operate: 'ROTATE',
+          fill: '#2196F3',
+          callback: async () => {
+            await PlayModule.rotate()
+          }
+        },
+        {
+          operate: 'DROP',
+          fill: '#4CAF50',
+          callback: async () => {
+            await PlayModule.moveDrop()
+          }
+        },
+        {
+          operate: '1',
+          fill: '#EF9A9A',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 1, y: 0 })
+          }
+        },
+        {
+          operate: '2',
+          fill: '#CE93D8',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 2, y: 0 })
+          }
+        },
+        {
+          operate: '3',
+          fill: '#9FA8DA',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 3, y: 0 })
+          }
+        },
+        {
+          operate: '4',
+          fill: '#81D4FA',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 4, y: 0 })
+          }
+        },
+        {
+          operate: '5',
+          fill: '#A5D6A7',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 5, y: 0 })
+          }
+        },
+        {
+          operate: '6',
+          fill: '#C5E1A5',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 6, y: 0 })
+          }
+        },
+        {
+          operate: '7',
+          fill: '#FFCC80',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 7, y: 0 })
+          }
+        },
+        {
+          operate: '8',
+          fill: '#FFAB91',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 8, y: 0 })
+          }
+        },
+        {
+          operate: '9',
+          fill: '#BCAAA4',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 9, y: 0 })
+          }
+        },
+        {
+          operate: '10',
+          fill: '#80CBC4',
+          callback: async () => {
+            await PlayModule.moveTo({ x: 10, y: 0 })
           }
         }
       ]
@@ -118,23 +134,26 @@ export default Vue.extend({
   },
   methods: {
     handleKeyDown(event) {
-      switch (event.key) {
+      const key = event.key
+      switch (key) {
         case 'Backspace':
           this.inputKeys = this.inputKeys.slice(0, -1)
-          break
-        default:
-          this.inputKeys += event.key
+          return true
       }
+      if (key.length !== 1 || !this.reg.test(key)) {
+        return true
+      }
+      this.inputKeys += key
       const correct = this.sentenceList.findIndex(el => {
-        return this.inputKeys === this.senTemps[el].roman
+        return this.inputKeys === this.senTemps[el][0]
       })
-      console.log(correct)
       if (correct < 0) {
         return
       }
       this.inputKeys = ''
-      TypingModule.nextTyping()
+      TypingModule.nextTyping(correct)
       this.choices[correct].callback()
+      return false
     }
   }
 })
@@ -144,6 +163,9 @@ export default Vue.extend({
 .typing-field
   font-size: 10px
   &> div
-    margin-top: 1rem
-    margin-bottom: 1rem
+    margin-top: 0.2rem
+    margin-bottom: 0.2rem
+  &-operate
+    width: 40px
+    margin-right: 0.5rem
 </style>

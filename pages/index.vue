@@ -1,16 +1,16 @@
 <template lang="pug">
   div
     .typris-title.d-flex.flex-column.align-items-center
-      dot-component#typris-title.m-5(
+      dot-component#typris-title.m-3(
         :blocks="title"
         :strokeWidth=2
-        :blockSize=20
+        :blockSize=7
         roundColor="gold"
       )
-      dot-component#start-button.m-5(
+      dot-component#start-button.m-3(
         :blocks="start"
         :strokeWidth=1
-        :blockSize=5
+        :blockSize=2
         roundColor="red"
         @click="startPlay"
       )

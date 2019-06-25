@@ -8,18 +8,17 @@ import {
 import { SentenceTemplates } from '@/types/SentenceTemplates'
 import shuffle from '@/plugins/shuffle'
 import store from '../store'
-import PlayModule from './play'
 
 @Module({ dynamic: true, name: 'TypingArea', store })
 class TypingGame extends VuexModule {
   // 選択肢の数。
-  private choicesLength = PlayModule.maxWidth - 2
-  private shuffleSentences = [...Array(this.choicesLength).keys()]
+  private choicesLength = 13
+  private shuffleSentences = [...Array(SentenceTemplates.length).keys()]
   private sentenceList: number[] = this.initTyping()
 
   initTyping() {
     shuffle(this.shuffleSentences)
-    return this.shuffleSentences.slice(0, this.choicesLength)
+    return this.shuffleSentences.splice(0, this.choicesLength)
   }
 
   get getSentenceList() {
@@ -31,13 +30,17 @@ class TypingGame extends VuexModule {
   }
 
   @Mutation
-  private SET_SENTENCE_LIST(sentenceList: number[]) {
-    this.sentenceList = sentenceList
+  private SET_NEXT_SENTENCE(correctIndex: number) {
+    this.sentenceList[correctIndex] = this.shuffleSentences[0]
+    this.shuffleSentences.shift()
+    if (this.shuffleSentences.length === 0) {
+      this.shuffleSentences = [...Array(SentenceTemplates.length).keys()]
+      shuffle(this.shuffleSentences)
+    }
   }
   @Action
-  nextTyping() {
-    shuffle(this.shuffleSentences)
-    this.SET_SENTENCE_LIST(this.shuffleSentences.slice(0, this.choicesLength))
+  nextTyping(correctIndex: number) {
+    this.SET_NEXT_SENTENCE(correctIndex)
   }
 }
 

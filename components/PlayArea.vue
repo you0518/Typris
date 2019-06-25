@@ -12,7 +12,7 @@
             :x="j * blockSize"
             :width="blockSize"
             :height="blockSize"
-            :fill="colColor[j % colColor.length]"
+            :fill="colColor[(j - 1) % colColor.length].fill"
             stroke="white"
             :stroke-width="strokeWidth")
           //- 壁の描画
@@ -47,22 +47,23 @@ export default Vue.extend({
       // タイマー番号
       interval: 0,
       // ゲーム開始時のミノ落下時間[ms]
-      speed: 1000,
+      speed: 1500,
       // 上げてくスピードの段階
       baseSpeed: 0.8,
       // 1マスのサイズ[px]
       blockSize: 20,
       strokeWidth: 1,
       colColor: [
-        '#FFEBEE',
-        '#F3E5F5',
-        '#E8EAF6',
-        '#E1F5FE',
-        '#E8F5E9',
-        '#F9FBE7',
-        '#FFF3E0',
-        '#FBE9E7',
-        '#EFEBE9'
+        { fill: '#FFEBEE', stroke: '#EF9A9A' },
+        { fill: '#F3E5F5', stroke: '#CE93D8' },
+        { fill: '#E8EAF6', stroke: '#9FA8DA' },
+        { fill: '#E1F5FE', stroke: '#81D4FA' },
+        { fill: '#E8F5E9', stroke: '#A5D6A7' },
+        { fill: '#F1F8E9', stroke: '#C5E1A5' },
+        { fill: '#FFF3E0', stroke: '#FFCC80' },
+        { fill: '#FBE9E7', stroke: '#FFAB91' },
+        { fill: '#EFEBE9', stroke: '#BCAAA4' },
+        { fill: '#E0F2F1', stroke: '#80CBC4' }
       ]
     }
   },
@@ -77,7 +78,7 @@ export default Vue.extend({
      * プレイ領域の高さ[px]
      */
     playAreaHeight(): number {
-      return this.blockSize * PlayAreaModule.maxHeight
+      return this.blockSize * (PlayAreaModule.maxHeight + 1)
     },
     playArea() {
       // 直接importしたものをsvgでつかうと、cannot find PlayAreaModuleと言われてしまうため。

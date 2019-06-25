@@ -425,9 +425,10 @@ class PlayArea extends VuexModule {
   async moveLeft() {
     const moveTo: Point = { x: this.currentMino.x - 1, y: this.currentMino.y }
     if (!(await this.canMove(moveTo))) {
-      return
+      return false
     }
     this.MOVE_TO(moveTo)
+    return true
   }
   /**
    * 操作ミノを右隣へ移動させる
@@ -436,9 +437,10 @@ class PlayArea extends VuexModule {
   async moveRight() {
     const moveTo: Point = { x: this.currentMino.x + 1, y: this.currentMino.y }
     if (!(await this.canMove(moveTo))) {
-      return
+      return false
     }
     this.MOVE_TO(moveTo)
+    return true
   }
   /**
    * 操作ミノを下へ移動させる
@@ -464,6 +466,22 @@ class PlayArea extends VuexModule {
     moveTo.y--
     this.MOVE_TO(moveTo)
     await this.deleteLine()
+  }
+
+  /**
+   * 指定した座標へミノを移動させる。
+   * 指定した座標が移動不可能の場合、行けるところまで行く。
+   * @param point 移動先絶対座標
+   */
+  @Action
+  async moveTo(point: Point) {
+    const mino = this.currentMino
+    const moveX = point.x - mino.x
+    const moveY = point.y - mino.y
+    const leftRight = moveX < 0 ? this.moveLeft : this.moveRight
+    const absX = Math.abs(moveX)
+    for (let i = 0; i < absX && (await leftRight()); i++) {}
+    for (let i = 0; i < moveY && (await this.moveDown()); i++) {}
   }
   /**
    * 操作ミノを回転させる

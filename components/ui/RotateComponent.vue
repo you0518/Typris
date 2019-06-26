@@ -17,7 +17,7 @@ export default Vue.extend({
   props: {
     text: {
       type: Array,
-      default: () => []
+      default: () => ['', '']
     },
     fill: {
       type: String,

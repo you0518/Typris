@@ -17,7 +17,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import DotComponent from '@/components/DotComponent.vue'
+import DotComponent from '@/components/ui/DotComponent.vue'
 
 export default Vue.extend({
   components: {

@@ -2,24 +2,42 @@
   .typing-field
     div
       b-form-input(v-model="inputKeys")
-    .d-flex(v-for="(choice, index) in choices" :key="choice.operate" :class="{'mb-3': index === 2}")
-      .typing-field-operate.text-center
-        .h-100.rounded.d-flex.flex-column.justify-content-center(:style="{'background-color': choice.fill}")
-          div 
-            b {{choice.operate}}
-      .flex-grow-1 
-        span
-          b {{ senTemps[sentenceList[index]][0] }}
-        span.ml-3 {{ senTemps[sentenceList[index]][1] }}
-
+    
+    .d-flex.flex-column
+      .d-flex.justify-content-center
+        hold(
+          :fill="choices[0].fill"
+          :text="[...senTemps[sentenceList[0]]]")
+      .d-flex.justify-content-center
+        arrow.m-1(vector="left"
+          :fill="choices[3].fill"
+          :text="[...senTemps[sentenceList[3]]]")
+        rotate.m-1(
+          :fill="choices[1].fill"
+          :text="[...senTemps[sentenceList[1]]]")
+        arrow.m-1(vector="right"
+          :fill="choices[4].fill"
+          :text="[...senTemps[sentenceList[4]]]")
+      .d-flex.justify-content-center
+        arrow.m-1(vector="bottom"
+          :fill="choices[2].fill"
+          :text="[...senTemps[sentenceList[2]]]")
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import TypingModule from '@/store/modules/typing'
 import PlayModule from '@/store/modules/play'
+import Arrow from '@/components/ui/ArrowComponent.vue'
+import Rotate from '@/components/ui/RotateComponent.vue'
+import Hold from '@/components/ui/HoldComponent.vue'
 
 export default Vue.extend({
+  components: {
+    Arrow,
+    Rotate,
+    Hold
+  },
   data() {
     return {
       inputKeys: '',
@@ -48,73 +66,17 @@ export default Vue.extend({
           }
         },
         {
-          operate: '1',
-          fill: '#EF9A9A',
-          callback: async () => {
-            await PlayModule.moveTo({ x: 1, y: 0 })
-          }
-        },
-        {
-          operate: '2',
+          operate: 'left',
           fill: '#CE93D8',
           callback: async () => {
-            await PlayModule.moveTo({ x: 2, y: 0 })
+            await PlayModule.moveLeft()
           }
         },
         {
-          operate: '3',
-          fill: '#9FA8DA',
+          operate: 'right',
+          fill: '#EF9A9A',
           callback: async () => {
-            await PlayModule.moveTo({ x: 3, y: 0 })
-          }
-        },
-        {
-          operate: '4',
-          fill: '#81D4FA',
-          callback: async () => {
-            await PlayModule.moveTo({ x: 4, y: 0 })
-          }
-        },
-        {
-          operate: '5',
-          fill: '#A5D6A7',
-          callback: async () => {
-            await PlayModule.moveTo({ x: 5, y: 0 })
-          }
-        },
-        {
-          operate: '6',
-          fill: '#C5E1A5',
-          callback: async () => {
-            await PlayModule.moveTo({ x: 6, y: 0 })
-          }
-        },
-        {
-          operate: '7',
-          fill: '#FFCC80',
-          callback: async () => {
-            await PlayModule.moveTo({ x: 7, y: 0 })
-          }
-        },
-        {
-          operate: '8',
-          fill: '#FFAB91',
-          callback: async () => {
-            await PlayModule.moveTo({ x: 8, y: 0 })
-          }
-        },
-        {
-          operate: '9',
-          fill: '#BCAAA4',
-          callback: async () => {
-            await PlayModule.moveTo({ x: 9, y: 0 })
-          }
-        },
-        {
-          operate: '10',
-          fill: '#80CBC4',
-          callback: async () => {
-            await PlayModule.moveTo({ x: 10, y: 0 })
+            await PlayModule.moveRight()
           }
         }
       ]

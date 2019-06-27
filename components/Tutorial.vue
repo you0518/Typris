@@ -1,7 +1,7 @@
 <template lang="pug">
   .tutorial
     p 英単語のタイピングによってブロックを操作する落ちゲーです。
-    h4 アイコンについて
+    h4 操作方法
     p 下記のように、アイコン上に英単語が表示されます。対応する英単語をタイピングすることでブロックを操作します。
     .d-flex.flex-column
       .d-flex.justify-content-center
@@ -22,6 +22,15 @@
         arrow.operate-component(vector="bottom"
           :fill="choices[2].fill"
           :text="[choices[2].operate, choices[2].explain]")
+    h4 対応環境
+    ul 
+      li PCのみ。スマートフォン、タブレットは未対応
+    h4 対応ブラウザ
+    ul
+      li Chrome
+      li Microsoft Edge
+      li FireFox
+      li Safari
 
 </template>
 
@@ -48,7 +57,7 @@ export default Vue.extend({
         {
           operate: 'ROTATE',
           fill: '#2196F3',
-          explain: '操作中のブロックを右に回転します'
+          explain: '操作中のブロックを時計回りに回転します'
         },
         {
           operate: 'DROP',
@@ -73,7 +82,7 @@ export default Vue.extend({
 
 <style lang="sass" scoped>
 .operate-component
-  width: 300px
+  width: 310px
   height: 120px
   font-size: 1rem
   marigin: 1rem

@@ -54,9 +54,11 @@
             a(
               href="https://twitter.com/share?ref_src=twsrc%5Etfw"
               class="twitter-share-button"
+              data-url:="https://typris.netlify.com/play"
               data-show-count="true"
               :data-text="`タイピングで落ちゲー #TYPIS スコアは ${score} 点、タイピングワード数は ${typeWord} でした！`"
-              data-hashtags="TYPRIS") シェア
+              data-hashtags="TYPRIS"
+              data-size="large") シェア
               script(async src="https://platform.twitter.com/widgets.js" charset="utf-8")
 </template>
 <script lang="ts">
@@ -154,6 +156,9 @@ export default Vue.extend({
   },
   async mounted() {
     await this.startPlay()
+  },
+  beforeDestroy() {
+    window.clearInterval(this.interval)
   },
   methods: {
     async startPlay() {

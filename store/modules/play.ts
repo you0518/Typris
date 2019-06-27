@@ -84,7 +84,7 @@ class PlayArea extends VuexModule {
   private nextMinoList: number[] = []
   // ランダムでミノを取り出すためのやつ。連番で初期化
   private shuffleMinoList: number[] = [...Array(MinoTemplates.length).keys()]
-
+  // ホールド中のミノ
   private holdMino: HoldState = {
     holded: false,
     mino: -1
@@ -174,6 +174,10 @@ class PlayArea extends VuexModule {
     this.playArea = [...InitPlayArea(this.maxWidth, this.maxHeight)]
     this.shuffleMinoList = [...Array(MinoTemplates.length).keys()]
     this.isStarted = isStart
+    this.holdMino = {
+      holded: false,
+      mino: -1
+    }
   }
 
   /**

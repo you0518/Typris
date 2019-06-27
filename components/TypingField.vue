@@ -1,25 +1,25 @@
 <template lang="pug">
   .typing-field
     div
-      b-form-input(v-model="inputKeys")
+      b-input(v-model="inputKeys" disabled)
     
     .d-flex.flex-column
       .d-flex.justify-content-center
-        hold(
+        hold.operate-component(
           :fill="choices[0].fill"
           :text="[...senTemps[sentenceList[0]]]")
       .d-flex.justify-content-center
-        arrow.m-1(vector="left"
+        arrow.operate-component(vector="left"
           :fill="choices[3].fill"
           :text="[...senTemps[sentenceList[3]]]")
-        rotate.m-1(
+        rotate.operate-component(
           :fill="choices[1].fill"
           :text="[...senTemps[sentenceList[1]]]")
-        arrow.m-1(vector="right"
+        arrow.operate-component(vector="right"
           :fill="choices[4].fill"
           :text="[...senTemps[sentenceList[4]]]")
       .d-flex.justify-content-center
-        arrow.m-1(vector="bottom"
+        arrow.operate-component(vector="bottom"
           :fill="choices[2].fill"
           :text="[...senTemps[sentenceList[2]]]")
 </template>
@@ -91,6 +91,9 @@ export default Vue.extend({
       return TypingModule.getSentenceList
     }
   },
+  created() {
+    TypingModule.initTyping()
+  },
   mounted() {
     window.addEventListener('keydown', this.handleKeyDown)
   },
@@ -114,6 +117,7 @@ export default Vue.extend({
       }
       this.inputKeys = ''
       TypingModule.nextTyping(correct)
+      TypingModule.countTypeWord()
       this.choices[correct].callback()
       return false
     }
@@ -123,11 +127,9 @@ export default Vue.extend({
 
 <style lang="sass" scoped>
 .typing-field
-  font-size: 10px
-  &> div
-    margin-top: 0.2rem
-    margin-bottom: 0.2rem
-  &-operate
-    width: 40px
-    margin-right: 0.5rem
+
+.operate-component
+  width: 180px
+  height: 120px
+  font-size: 1.5rem
 </style>

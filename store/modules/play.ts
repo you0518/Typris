@@ -40,14 +40,33 @@ export interface HoldState {
 const deepCopy = (obj: any) => {
   return JSON.parse(JSON.stringify(obj))
 }
+/**
+ * ミノ表示領域を、壁を-1で、ミノ無しを0で初期化する
+ */
+const InitPlayArea = (maxWidth, maxHeight) => {
+  const playArea: PlayState[][] = new Array(maxHeight)
+
+  for (let i = 0; i < maxHeight; i++) {
+    playArea[i] = new Array(maxWidth)
+    for (let j = 0; j < maxWidth; j++) {
+      if (i === 0 || i === maxHeight - 1 || j === 0 || j === maxWidth - 1) {
+        playArea[i][j] = deepCopy(wall)
+      } else {
+        playArea[i][j] = deepCopy(empty)
+      }
+    }
+  }
+  return playArea
+}
+
+const wall: PlayState = { confirm: true, mino: -1 }
+const empty: PlayState = { confirm: false, mino: 0 }
 
 @Module({ dynamic: true, name: 'PlayArea', store })
 class PlayArea extends VuexModule {
   public maxWidth: number = 10 + 2
   public maxHeight: number = 20 + 2
-  private wall: PlayState = { confirm: true, mino: -1 }
-  private empty: PlayState = { confirm: false, mino: 0 }
-  private playArea: PlayState[][] = this.InitPlayArea()
+  private playArea: PlayState[][] = InitPlayArea(this.maxWidth, this.maxHeight)
   // ミノの開始基準点
   private startPoint: Point = {
     x: 5,
@@ -81,29 +100,6 @@ class PlayArea extends VuexModule {
   private baseScore: number = 1000
   // 何点ごとにレベルを上げるか
   private baseLevel: number = 5000
-  /**
-   * ミノ表示領域を、壁を-1で、ミノ無しを0で初期化する
-   */
-  private InitPlayArea(): PlayState[][] {
-    const playArea: PlayState[][] = new Array(this.maxHeight)
-
-    for (let i = 0; i < this.maxHeight; i++) {
-      playArea[i] = new Array(this.maxWidth)
-      for (let j = 0; j < this.maxWidth; j++) {
-        if (
-          i === 0 ||
-          i === this.maxHeight - 1 ||
-          j === 0 ||
-          j === this.maxWidth - 1
-        ) {
-          playArea[i][j] = deepCopy(this.wall)
-        } else {
-          playArea[i][j] = deepCopy(this.empty)
-        }
-      }
-    }
-    return playArea
-  }
 
   get getPlayArea() {
     return this.playArea
@@ -174,7 +170,9 @@ class PlayArea extends VuexModule {
   }
 
   @Mutation
-  private SET_STARTED(isStart: boolean) {
+  private INIT_PLAY_AREA(isStart: boolean) {
+    this.playArea = [...InitPlayArea(this.maxWidth, this.maxHeight)]
+    this.shuffleMinoList = [...Array(MinoTemplates.length).keys()]
     this.isStarted = isStart
   }
 
@@ -223,7 +221,7 @@ class PlayArea extends VuexModule {
         if (minoBlock[y][x] === 0) {
           continue
         }
-        playArea[currentY + y][currentX + x] = deepCopy(this.empty)
+        playArea[currentY + y][currentX + x] = deepCopy(empty)
       }
     }
 
@@ -268,7 +266,7 @@ class PlayArea extends VuexModule {
         if (minoBlock[y][x] === 0) {
           continue
         }
-        playArea[currentY + y][currentX + x] = deepCopy(this.empty)
+        playArea[currentY + y][currentX + x] = deepCopy(empty)
       }
     }
 
@@ -313,9 +311,9 @@ class PlayArea extends VuexModule {
     const row: PlayState[] = new Array(this.maxWidth)
     for (let i = 0; i < row.length; i++) {
       if (i === 0 || i === row.length - 1) {
-        row[i] = deepCopy(this.wall)
+        row[i] = deepCopy(wall)
       } else {
-        row[i] = deepCopy(this.empty)
+        row[i] = deepCopy(empty)
       }
     }
     lineIndex.forEach((el, index) => {
@@ -375,7 +373,7 @@ class PlayArea extends VuexModule {
         if (minoBlock[y][x] === 0) {
           continue
         }
-        this.playArea[currentY + y][currentX + x] = deepCopy(this.empty)
+        this.playArea[currentY + y][currentX + x] = deepCopy(empty)
       }
     }
   }
@@ -385,7 +383,7 @@ class PlayArea extends VuexModule {
    */
   @Action
   startPlay() {
-    this.SET_STARTED(true)
+    this.INIT_PLAY_AREA(true)
     this.SET_GAME_OVER(false)
     this.SET_SCORE(0)
     shuffle(this.shuffleMinoList)

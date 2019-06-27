@@ -4,27 +4,87 @@
       dot-component#typris-title.m-3(
         :blocks="title"
         :strokeWidth=2
-        :blockSize=7
+        :blockSize=20
         roundColor="gold"
       )
-      dot-component#start-button.m-3(
+      dot-component#start-button.m-2(
         :blocks="start"
         :strokeWidth=1
-        :blockSize=2
+        :blockSize=6
         roundColor="red"
         @click="startPlay"
       )
+      .m-3.p-3.border
+        dot-component#tutorial-button.mb-3(
+          :blocks="tutorial"
+          :strokeWidth=1
+          :blockSize=3
+          roundColor="blue"
+        )
+        tutorial
+      contact.mb-3
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import DotComponent from '@/components/ui/DotComponent.vue'
+import Tutorial from '@/components/Tutorial.vue'
+import Contact from '@/components/Contact.vue'
 
 export default Vue.extend({
   components: {
-    DotComponent
+    DotComponent,
+    Tutorial,
+    Contact
   },
   data() {
     return {
+      tutorial: [
+        [
+          [0, 0, 1, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 0],
+          [0, 0, 1, 0, 0, 0, 0],
+          [0, 1, 1, 1, 0, 1, 0],
+          [1, 0, 1, 0, 1, 0, 0],
+          [1, 0, 1, 1, 0, 1, 0],
+          [0, 1, 0, 1, 0, 1, 0]
+        ],
+        [
+          [0, 1, 1, 1, 1, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 0],
+          [0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 0, 1, 1, 1, 0]
+        ],
+        [
+          [0, 0, 0, 0, 1, 1, 0],
+          [1, 1, 1, 0, 0, 1, 1],
+          [0, 1, 0, 0, 0, 0, 0],
+          [1, 0, 0, 0, 1, 1, 1],
+          [1, 0, 0, 0, 1, 0, 0],
+          [1, 0, 0, 1, 0, 0, 0],
+          [0, 1, 1, 0, 0, 0, 0]
+        ],
+        [
+          [0, 1, 0, 0, 0, 1, 0],
+          [1, 1, 1, 1, 0, 0, 1],
+          [0, 1, 0, 0, 1, 0, 0],
+          [0, 1, 0, 0, 1, 0, 0],
+          [0, 1, 0, 0, 1, 0, 0],
+          [0, 1, 0, 0, 1, 0, 0],
+          [0, 0, 0, 1, 1, 0, 0]
+        ],
+        [
+          [0, 1, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 0, 0],
+          [0, 1, 0, 0, 0, 0, 0],
+          [0, 1, 0, 1, 1, 1, 0],
+          [0, 1, 0, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0, 0, 0],
+          [0, 1, 0, 1, 1, 1, 0]
+        ]
+      ],
       start: [
         [
           [1, 0, 0, 0, 1, 0, 0],
@@ -129,7 +189,13 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 #start-button
   cursor: pointer
+#tutorial-button
+  cursor: pointer
+
+.tutorial-modal
+  width: 90vw
+  height: 90vh
 </style>

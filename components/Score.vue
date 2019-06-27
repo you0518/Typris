@@ -1,7 +1,7 @@
 <template lang="pug">
   .score.d-flex.flex-column.align-items-center.m-3
     div
-      h5 SCORE
+      h4 SCORE
     div
       h4 {{score}}
 </template>

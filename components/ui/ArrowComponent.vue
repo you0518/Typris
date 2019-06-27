@@ -43,10 +43,7 @@ export default Vue.extend({
 </script>
 <style lang="sass" scoped>
 .arrow-component
-  width: 100px
-  height: 70px
   position: relative
-  font-size: 1rem
   &-vector
     width: 0
     height: 0
@@ -59,13 +56,13 @@ export default Vue.extend({
     z-index: -1
   .bottom-arrow
     border-style: solid
-    border-width: 70px 30px 0 30px
+    border-width: 120px 50px 0 50px
 
   .left-arrow
     border-style: solid
-    border-width: 30px 70px 30px 0
+    border-width: 50px 150px 50px 0
 
   .right-arrow
     border-style: solid
-    border-width: 30px 0 30px 70px
+    border-width: 50px 0 50px 150px
 </style>

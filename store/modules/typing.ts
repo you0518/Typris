@@ -14,12 +14,9 @@ class TypingGame extends VuexModule {
   // 選択肢の数。
   private choicesLength = 13
   private shuffleSentences = [...Array(SentenceTemplates.length).keys()]
-  private sentenceList: number[] = this.initTyping()
-
-  initTyping() {
-    shuffle(this.shuffleSentences)
-    return this.shuffleSentences.splice(0, this.choicesLength)
-  }
+  private sentenceList!: number[]
+  // タイプしたワードの数
+  private typeWord: number = 0
 
   get getSentenceList() {
     return this.sentenceList
@@ -27,6 +24,16 @@ class TypingGame extends VuexModule {
 
   get getSentenceTemplates() {
     return SentenceTemplates
+  }
+
+  get getTypeWord() {
+    return this.typeWord
+  }
+
+  @Mutation
+  private INIT_TYPING() {
+    shuffle(this.shuffleSentences)
+    this.sentenceList = this.shuffleSentences.splice(0, this.choicesLength)
   }
 
   @Mutation
@@ -38,9 +45,24 @@ class TypingGame extends VuexModule {
       shuffle(this.shuffleSentences)
     }
   }
+
+  @Mutation
+  private COUNT_TYPE_WORD() {
+    this.typeWord++
+  }
+  @Action
+  initTyping() {
+    this.INIT_TYPING()
+  }
+
   @Action
   nextTyping(correctIndex: number) {
     this.SET_NEXT_SENTENCE(correctIndex)
+  }
+
+  @Action
+  countTypeWord() {
+    this.COUNT_TYPE_WORD()
   }
 }
 

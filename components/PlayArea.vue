@@ -36,10 +36,33 @@
             :fill="fillColorList[point.mino]"
             :stroke="strokeColorList[point.mino]"
             :stroke-width="strokeWidth")
+    b-button(@click="startPlay" variant="danger") リスタート
+    b-modal#result-modal(ref="result-modal" cancel-title="閉じる" ok-title="もう一度プレイする" title="RESULT" @ok="startPlay")
+      b-container(fluid)
+        b-row
+          b-col(cols="8")
+            h4 SCORE
+          b-col
+            h4 {{ score }}
+        b-row
+          b-col(cols="8")
+            h4 タイピングワード数
+          b-col
+            h4 {{ typeWord }}
+        b-row.text-right
+          b-col
+            a(
+              href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+              class="twitter-share-button"
+              data-show-count="true"
+              :data-text="`タイピングで落ちゲー #TYPIS スコアは ${score} 点、タイピングワード数は ${typeWord} でした！`"
+              data-hashtags="TYPRIS") シェア
+              script(async src="https://platform.twitter.com/widgets.js" charset="utf-8")
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import PlayAreaModule from '@/store/modules/play'
+import TypingModule from '@/store/modules/typing'
 
 export default Vue.extend({
   data() {
@@ -51,7 +74,7 @@ export default Vue.extend({
       // 上げてくスピードの段階
       baseSpeed: 0.8,
       // 1マスのサイズ[px]
-      blockSize: 20,
+      blockSize: 25,
       strokeWidth: 1,
       colColor: [
         { fill: '#FFEBEE', stroke: '#EF9A9A' },
@@ -96,16 +119,30 @@ export default Vue.extend({
     strokeColorList() {
       return PlayAreaModule.getStrokeColorList
     },
+    /**
+     * ゲームオーバーを監視するために必要
+     */
     gameOver() {
       return PlayAreaModule.getGameOver
     },
-    level(): number {
+    /**
+     * レベルを監視するために必要
+     */
+    level() {
       return PlayAreaModule.getLevel
+    },
+    score() {
+      return PlayAreaModule.getScore
+    },
+    typeWord() {
+      return TypingModule.getTypeWord
     }
   },
   watch: {
     gameOver() {
       window.clearInterval(this.interval)
+      const modal = this.$refs['result-modal'] as any
+      modal.show()
     },
     level() {
       window.clearInterval(this.interval)
@@ -115,12 +152,20 @@ export default Vue.extend({
       )
     }
   },
-  mounted() {
-    PlayAreaModule.startPlay()
-    this.interval = window.setInterval(
-      () => PlayAreaModule.moveDown(),
-      this.speed
-    )
+  async mounted() {
+    await this.startPlay()
+  },
+  methods: {
+    async startPlay() {
+      if (this.interval) {
+        window.clearInterval(this.interval)
+      }
+      await PlayAreaModule.startPlay()
+      this.interval = window.setInterval(
+        () => PlayAreaModule.moveDown(),
+        this.speed
+      )
+    }
   }
 })
 </script>

@@ -22,7 +22,7 @@
           roundColor="blue"
         )
         tutorial
-      contact.mb-3
+      
 </template>
 <script lang="ts">
 import Vue from 'vue'

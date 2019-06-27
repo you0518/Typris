@@ -1,8 +1,19 @@
-<template>
-  <div>
-    <nuxt />
-  </div>
+<template lang="pug">
+  div
+    nuxt
+    contact.mb-3
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+import Contact from '@/components/Contact.vue'
+
+export default Vue.extend({
+  components: {
+    Contact
+  }
+})
+</script>
 
 <style>
 html {

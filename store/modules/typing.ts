@@ -12,7 +12,7 @@ import store from '../store'
 @Module({ dynamic: true, name: 'TypingArea', store })
 class TypingGame extends VuexModule {
   // 選択肢の数。
-  private choicesLength = 13
+  private choicesLength = 5
   private shuffleSentences = [...Array(SentenceTemplates.length).keys()]
   private sentenceList!: number[]
   // タイプしたワードの数

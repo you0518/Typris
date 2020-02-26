@@ -5,7 +5,6 @@
       b {{ text[0] }}
     .text-center {{ text[1] }}
 
-
 </template>
 
 <script lang="ts">

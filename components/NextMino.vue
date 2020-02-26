@@ -9,12 +9,12 @@
       template(v-for="(minoBlock, i) in nextMinoBlockList")
         //- 外枠を描画
         rect(
-              :y="i * oneMinoAreaHeight"
-              :width="blockSize * width"
-              :height="blockSize * height"
-              fill="white"
-              stroke="black"
-              stroke-width="1")
+          :y="i * oneMinoAreaHeight"
+          :width="blockSize * width"
+          :height="blockSize * height"
+          fill="white"
+          stroke="black"
+          stroke-width="1")
         template(v-for="(minoBlockRow, j) in minoBlock")
           template(v-for="(mino, k) in minoBlockRow")
             rect(v-if="mino!==0"
@@ -25,7 +25,7 @@
               :fill="fillColorList[mino]"
               :stroke="strokeColorList[mino]"
               :stroke-width="strokeWidth")
-          
+
 </template>
 
 <script lang="ts">

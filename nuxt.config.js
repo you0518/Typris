@@ -24,7 +24,7 @@ export default {
     host: '0.0.0.0'
   },
   router: {
-    extendRoutes(routes: any, resolve: any) {
+    extendRoutes(routes, resolve) {
       routes.push({
         name: 'custom',
         path: '*',
@@ -51,9 +51,9 @@ export default {
     // Doc: https://bootstrap-vue.js.org/docs/
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios',
-    '@nuxtjs/eslint-module'
+    '@nuxtjs/axios'
   ],
+  buildModules: ['@nuxtjs/eslint-module', '@nuxt/typescript-build'],
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options

@@ -25,7 +25,7 @@
               :fill="fillColorList[k + 1]"
               :stroke="strokeColorList[k + 1]"
               :stroke-width="strokeWidth")
-      
+
 </template>
 <script lang="ts">
 import Vue, { PropType } from 'vue'

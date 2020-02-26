@@ -23,7 +23,7 @@
           :fill="choices[2].fill"
           :text="[choices[2].operate, choices[2].explain]")
     h4 対応環境
-    ul 
+    ul
       li PCのみ。スマートフォン、タブレットは未対応
     h4 対応ブラウザ
     ul

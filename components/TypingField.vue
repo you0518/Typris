@@ -2,7 +2,7 @@
   .typing-field
     div
       b-input(v-model="inputKeys" disabled)
-    
+
     .d-flex.flex-column
       .d-flex.justify-content-center
         hold.operate-component(
@@ -98,7 +98,7 @@ export default Vue.extend({
     window.addEventListener('keydown', this.handleKeyDown)
   },
   methods: {
-    handleKeyDown(event) {
+    handleKeyDown(event: KeyboardEvent) {
       const key = event.key
       switch (key) {
         case 'Backspace':

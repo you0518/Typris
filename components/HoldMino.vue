@@ -23,7 +23,7 @@
             :fill="fillColorList[point]"
             :stroke="strokeColorList[point]"
             :stroke-width="strokeWidth")
-          
+
 </template>
 
 <script lang="ts">

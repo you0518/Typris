@@ -4,25 +4,22 @@ module.exports = {
     browser: true,
     node: true
   },
-  parserOptions: {
-    parser: '@typescript-eslint/parser',
-    project: './tsconfig.json',
-  },
   extends: [
     '@nuxtjs',
-    'plugin:nuxt/recommended',
-    'plugin:prettier/recommended',
     'prettier',
     'prettier/vue',
-    'prettier/@typescript-eslint'
+    'plugin:prettier/recommended',
+    'plugin:nuxt/recommended',
+    '@nuxtjs/eslint-config-typescript'
   ],
-  plugins: [
-    'prettier',
-    '@typescript-eslint'
-  ],
+  plugins: ['prettier'],
   // add your custom rules here
   rules: {
-    '@typescript-eslint/no-unused-vars': 'error',
-    'no-console': 'off'
+    'space-before-function-paren': 0,
+    'no-console': 0,
+    'arrow-parens': 0,
+    // valid-typeofが文字列リテラル型と相性が悪い
+    'valid-typeof': 0,
+    camelcase: 0
   }
 }

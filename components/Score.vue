@@ -7,11 +7,12 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import PlayAreaModule from '@/store/modules/play'
+import { play } from '@/store'
+
 export default Vue.extend({
   computed: {
-    score() {
-      return PlayAreaModule.getScore
+    score(): number {
+      return play.getScore
     }
   }
 })

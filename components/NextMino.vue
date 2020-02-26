@@ -6,7 +6,7 @@
       :width="MinoAreaWidth"
       :height="MinoAreaHeight"
       :viewBox="`0 0 ${MinoAreaWidth} ${MinoAreaHeight}`")
-      template(v-for="(minoBlock, i) in nextMinoBlockList")
+      template(v-for="(minoBlock, i) in play.getNextMinoBlockList")
         //- 外枠を描画
         rect(
           :y="i * oneMinoAreaHeight"
@@ -22,14 +22,15 @@
               :x="(k + 1) * blockSize"
               :width="blockSize"
               :height="blockSize"
-              :fill="fillColorList[mino]"
-              :stroke="strokeColorList[mino]"
+              :fill="play.getColorList[mino]"
+              :stroke="play.getStrokeColorList[mino]"
               :stroke-width="strokeWidth")
 
 </template>
 
 <script lang="ts">
-import PlayAreaModule from '@/store/modules/play'
+import { play } from '@/store'
+
 import Vue from 'vue'
 export default Vue.extend({
   data() {
@@ -51,16 +52,10 @@ export default Vue.extend({
       return this.blockSize * this.width
     },
     MinoAreaHeight(): number {
-      return this.oneMinoAreaHeight * this.nextMinoBlockList.length
+      return this.oneMinoAreaHeight * this.play.getNextMinoBlockList.length
     },
-    nextMinoBlockList(): number[][][] {
-      return PlayAreaModule.getNextMinoBlockList
-    },
-    fillColorList(): string[] {
-      return PlayAreaModule.getColorList
-    },
-    strokeColorList() {
-      return PlayAreaModule.getStrokeColorList
+    play(): typeof play {
+      return play
     }
   }
 })

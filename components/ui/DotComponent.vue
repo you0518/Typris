@@ -22,15 +22,14 @@
               :x="(j + 2) * blockSize + blockSize * (row.length + 1) * k"
               :width="blockSize"
               :height="blockSize"
-              :fill="fillColorList[k + 1]"
-              :stroke="strokeColorList[k + 1]"
+              :fill="play.getColorList[k + 1]"
+              :stroke="play.getStrokeColorList[k + 1]"
               :stroke-width="strokeWidth")
 
 </template>
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import PlayAreaModule from '@/store/modules/play'
-
+import { play } from '@/store'
 export default Vue.extend({
   props: {
     blocks: {
@@ -60,14 +59,8 @@ export default Vue.extend({
     areaHeight(): number {
       return this.blockSize * (this.blocks[0].length + 3)
     },
-    fillColorList() {
-      return PlayAreaModule.getColorList
-    },
-    /**
-     * ミノの枠色
-     */
-    strokeColorList() {
-      return PlayAreaModule.getStrokeColorList
+    play(): typeof play {
+      return play
     }
   }
 })

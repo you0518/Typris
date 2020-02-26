@@ -1,16 +1,9 @@
-import {
-  Mutation,
-  Action,
-  VuexModule,
-  getModule,
-  Module
-} from 'vuex-module-decorators'
+import { Mutation, Action, VuexModule, Module } from 'vuex-module-decorators'
 import { SentenceTemplates } from '@/types/SentenceTemplates'
 import shuffle from '@/plugins/shuffle'
-import store from '../store'
 
-@Module({ dynamic: true, name: 'TypingArea', store })
-class TypingGame extends VuexModule {
+@Module({ stateFactory: true, namespaced: true, name: 'typing' })
+export default class Typing extends VuexModule {
   // 選択肢の数。
   private readonly choicesLength = 5
   private shuffleSentences = [...Array(SentenceTemplates.length).keys()]
@@ -66,5 +59,3 @@ class TypingGame extends VuexModule {
     this.COUNT_TYPE_WORD()
   }
 }
-
-export default getModule(TypingGame)

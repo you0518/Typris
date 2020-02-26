@@ -1,13 +1,6 @@
-import {
-  Mutation,
-  Action,
-  VuexModule,
-  getModule,
-  Module
-} from 'vuex-module-decorators'
+import { Mutation, Action, VuexModule, Module } from 'vuex-module-decorators'
 import shuffle from '@/plugins/shuffle'
 import { cloneDeep } from 'lodash'
-import store from '../store'
 import { MinoTemplates } from '~/types/MinoTemplates'
 export interface CurrentMinoState extends Point {
   /**
@@ -69,8 +62,8 @@ const wall: Readonly<PlaySquareState> = { confirm: true, mino: -1 }
  */
 const empty: Readonly<PlaySquareState> = { confirm: false, mino: 0 }
 
-@Module({ dynamic: true, name: 'PlayArea', store })
-class PlayArea extends VuexModule {
+@Module({ stateFactory: true, namespaced: true, name: 'play' })
+export default class Play extends VuexModule {
   public readonly maxWidth: number = 10 + 2
   public readonly maxHeight: number = 20 + 2
   private playArea: PlaySquareState[][] = InitPlayArea(
@@ -111,9 +104,9 @@ class PlayArea extends VuexModule {
   // レベル
   private level: number = 0
   // 1ライン消去における得点
-  private baseScore: number = 1000
+  private readonly baseScore: number = 1000
   // 何点ごとにレベルを上げるか
-  private baseLevel: number = 5000
+  private readonly baseLevel: number = 5000
 
   get getPlayArea() {
     return this.playArea
@@ -130,9 +123,7 @@ class PlayArea extends VuexModule {
    * 次のミノ一覧をブロックで返す
    */
   get getNextMinoBlockList() {
-    return this.nextMinoList.map(el => {
-      return MinoTemplates[el].blocks[0]
-    })
+    return this.nextMinoList.map(el => MinoTemplates[el].blocks[0])
   }
 
   /**
@@ -201,11 +192,12 @@ class PlayArea extends VuexModule {
   }
 
   /**
-   * 次のミノ配列を上書きする
+   * シャッフルされたミノリストから、次のミノを必要なだけ取り出し、次のミノ配列を上書きする。
    */
   @Mutation
-  private SET_NEXT_MINO_LIST(minoList: number[]) {
-    this.nextMinoList = minoList
+  private SET_NEXT_MINO_LIST() {
+    shuffle(this.shuffleMinoList)
+    this.nextMinoList = this.shuffleMinoList.splice(0, this.maxNexMinoLength)
   }
 
   @Mutation
@@ -224,11 +216,9 @@ class PlayArea extends VuexModule {
    */
   @Mutation
   private DEQUEUE_NEXT_MINO_LIST() {
-    this.currentMino.minoType = this.nextMinoList[0]
-    this.nextMinoList.shift()
+    this.currentMino.minoType = this.nextMinoList.shift() || 0
+    this.nextMinoList.push(this.shuffleMinoList.shift() || 0)
 
-    this.nextMinoList.push(this.shuffleMinoList[0])
-    this.shuffleMinoList.shift()
     if (this.shuffleMinoList.length === 0) {
       this.shuffleMinoList = [...Array(MinoTemplates.length).keys()]
       shuffle(this.shuffleMinoList)
@@ -246,37 +236,35 @@ class PlayArea extends VuexModule {
     if (this.currentMino.minoType < 0) {
       return
     }
-    const currentX = this.currentMino.x
-    const currentY = this.currentMino.y
     const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
     const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
-
+    const currentX = this.currentMino.x
+    const currentY = this.currentMino.y
     // 遷移元のミノを消す
-    for (let y = 0; y < minoBlock.length; y++) {
-      const xLength = minoBlock[y].length
-      for (let x = 0; x < xLength; x++) {
+    minoBlock.forEach((minoCol, y) => {
+      minoCol.forEach((_, x) => {
         // 次のミノ取り出し時には遷移元ミノは確定したので消しちゃだめ。
         if (this.playArea[currentY + y][currentX + x].confirm) {
-          continue
+          return
         }
         // ミノの空欄部分で、playAreaを消しちゃだめ
         if (minoBlock[y][x] === 0) {
-          continue
+          return
         }
         this.playArea[currentY + y][currentX + x] = cloneDeep(empty)
-      }
-    }
+      })
+    })
 
     // 遷移先に描画する
-    for (let y = 0; y < minoBlock.length; y++) {
-      const xLength = minoBlock[y].length
-      for (let x = 0; x < xLength; x++) {
-        if (minoBlock[y][x] === 0) {
-          continue
+    minoBlock.forEach((minoCol, y) => {
+      minoCol.forEach((mino, x) => {
+        // 空白なら描画しない
+        if (!mino) {
+          return
         }
-        this.playArea[moveTo.y + y][moveTo.x + x].mino = minoBlock[y][x]
-      }
-    }
+        this.playArea[moveTo.y + y][moveTo.x + x].mino = mino
+      })
+    })
     this.currentMino.x = moveTo.x
     this.currentMino.y = moveTo.y
   }
@@ -287,40 +275,41 @@ class PlayArea extends VuexModule {
    */
   @Mutation
   private SET_ROTATE() {
-    const currentX = this.currentMino.x
-    const currentY = this.currentMino.y
     const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
     const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
     // ミノ回転配列を一巡させるために、ミノ回転配列の長さで割ったあまりが必要になる。
     const rotate =
-      (this.currentMino.rotate + 1) %
-      MinoTemplates[this.currentMino.minoType].blocks.length
+      (this.currentMino.rotate + 1) % currentMinoTemplate.blocks.length
     const rotatedMinoBlock = currentMinoTemplate.blocks[rotate]
     this.currentMino.rotate = rotate
+    const currentX = this.currentMino.x
+    const currentY = this.currentMino.y
 
     // 遷移元のミノを消す
-    for (let y = 0; y < minoBlock.length; y++) {
-      const xLength = minoBlock[y].length
-      for (let x = 0; x < xLength; x++) {
+    minoBlock.forEach((minoCol, y) => {
+      minoCol.forEach((_, x) => {
+        // 次のミノ取り出し時には遷移元ミノは確定したので消しちゃだめ。
+        if (this.playArea[currentY + y][currentX + x].confirm) {
+          return
+        }
         // ミノの空欄部分で、playAreaを消しちゃだめ
         if (minoBlock[y][x] === 0) {
-          continue
+          return
         }
         this.playArea[currentY + y][currentX + x] = cloneDeep(empty)
-      }
-    }
+      })
+    })
 
     // 遷移先に描画する
-    for (let y = 0; y < rotatedMinoBlock.length; y++) {
-      const xLength = rotatedMinoBlock[y].length
-      for (let x = 0; x < xLength; x++) {
-        // ミノの空欄部分で、playAreaを消しちゃだめ
-        if (rotatedMinoBlock[y][x] === 0) {
-          continue
+    rotatedMinoBlock.forEach((minoCol, y) => {
+      minoCol.forEach((mino, x) => {
+        // 空白なら描画しない
+        if (!mino) {
+          return
         }
-        this.playArea[currentY + y][currentX + x].mino = rotatedMinoBlock[y][x]
-      }
-    }
+        this.playArea[currentY + y][currentX + x].mino = mino
+      })
+    })
   }
 
   /**
@@ -370,15 +359,14 @@ class PlayArea extends VuexModule {
     const currentMinoTemplate = MinoTemplates[this.currentMino.minoType]
     const minoBlock = currentMinoTemplate.blocks[this.currentMino.rotate]
 
-    for (let y = 0; y < minoBlock.length; y++) {
-      const xLength = minoBlock[y].length
-      for (let x = 0; x < xLength; x++) {
-        if (minoBlock[y][x] === 0) {
-          continue
+    minoBlock.forEach((minoCol, y) => {
+      minoCol.forEach((mino, x) => {
+        if (!mino) {
+          return
         }
         this.playArea[currentY + y][currentX + x].confirm = true
-      }
-    }
+      })
+    })
   }
 
   @Mutation
@@ -402,30 +390,30 @@ class PlayArea extends VuexModule {
     const minoBlock = minoTemplate.blocks[this.currentMino.rotate]
     this.currentMino.rotate = 0
 
-    // ホールド前のミノを消す
-    for (let y = 0; y < minoBlock.length; y++) {
-      const xLength = minoBlock[y].length
-      for (let x = 0; x < xLength; x++) {
-        // ミノの空欄部分で、playAreaを消しちゃだめ
-        if (minoBlock[y][x] === 0) {
-          continue
+    minoBlock.forEach((minoCol, y) => {
+      minoCol.forEach((mino, x) => {
+        if (!mino) {
+          return
         }
         this.playArea[currentY + y][currentX + x] = cloneDeep(empty)
-      }
-    }
+      })
+    })
+  }
+
+  @Mutation
+  private CREAR_HOLD() {
+    this.holdMino.holded = false
   }
 
   /**
    * ゲームを開始する
    */
-  @Action
+  @Action({ rawError: true })
   startPlay() {
     this.INIT_PLAY_AREA(true)
     this.SET_GAME_OVER(false)
     this.SET_SCORE(0)
-    shuffle(this.shuffleMinoList)
-    const minoList = this.shuffleMinoList.splice(0, this.maxNexMinoLength)
-    this.SET_NEXT_MINO_LIST(minoList)
+    this.SET_NEXT_MINO_LIST()
     this.DEQUEUE_NEXT_MINO_LIST()
     this.MOVE_TO(this.startPoint)
   }
@@ -528,17 +516,17 @@ class PlayArea extends VuexModule {
    */
   @Action
   deleteLine() {
-    this.holdMino.holded = false
+    this.CREAR_HOLD()
     this.CONFIRM_PLAY_AREA()
 
-    // ブロックで埋められていたので、ラインを消し、次のミノを取り出す操作を実行する。
+    // 1行がミノで埋まった列を探す。
     const delIndex: number[] = []
     for (let i = this.playArea.length - 2; i > 0; i--) {
       if (this.playArea[i].every(el => el.confirm)) {
         delIndex.push(i)
         continue
       }
-      // 行が壁と空のみの場合、これ以上上にミノがないためライン消去処理完了
+      // 行が壁と空のみの場合、これ以上上にミノがないため削除行探査処理完了
       if (this.playArea[i].every(el => el.mino <= 0)) {
         break
       }
@@ -568,4 +556,3 @@ class PlayArea extends VuexModule {
     this.MOVE_TO(this.startPoint)
   }
 }
-export default getModule(PlayArea)

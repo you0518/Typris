@@ -13,21 +13,22 @@
         fill="white"
         stroke="black"
         stroke-width="1")
-      template(v-for="(row, j) in holdMinoBlock")
+      template(v-for="(row, j) in play.getHoldMinoBlock")
         template(v-for="(point, k) in row")
           rect(v-if="point!==0"
             :y="(j + 1) * blockSize"
             :x="(k + 1) * blockSize"
             :width="blockSize"
             :height="blockSize"
-            :fill="fillColorList[point]"
-            :stroke="strokeColorList[point]"
+            :fill="play.getColorList[point]"
+            :stroke="play.getStrokeColorList[point]"
             :stroke-width="strokeWidth")
 
 </template>
 
 <script lang="ts">
-import PlayAreaModule from '@/store/modules/play'
+import { play } from '@/store'
+
 import Vue from 'vue'
 export default Vue.extend({
   data() {
@@ -42,6 +43,9 @@ export default Vue.extend({
     }
   },
   computed: {
+    play(): typeof play {
+      return play
+    },
     /**
      * ホールド領域の幅[px]
      */
@@ -53,15 +57,6 @@ export default Vue.extend({
      */
     minoAreaHeight(): number {
       return this.blockSize * this.height
-    },
-    holdMinoBlock(): number[][] {
-      return PlayAreaModule.getHoldMinoBlock
-    },
-    fillColorList(): string[] {
-      return PlayAreaModule.getColorList
-    },
-    strokeColorList() {
-      return PlayAreaModule.getStrokeColorList
     }
   }
 })

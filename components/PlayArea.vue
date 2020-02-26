@@ -4,7 +4,7 @@
       :width="playAreaWidth"
       :height="playAreaHeight"
       :viewBox="`0 0 ${playAreaWidth} ${playAreaHeight}`")
-      template(v-for="(row, i) in playArea")
+      template(v-for="(row, i) in play.getPlayArea")
         template(v-for="(point, j) in row")
           //- 空列の描画
           rect(v-if="point.mino!==-1"
@@ -24,7 +24,7 @@
             fill="#795548"
             stroke="#3E2723"
             :stroke-width="strokeWidth")
-      template(v-for="(row, i) in playArea")
+      template(v-for="(row, i) in play.getPlayArea")
         template(v-for="(point, j) in row")
           //- ミノの描画
           //- 後から描画しないと、罫線同士が重なりレイアウトに違和感が出る。
@@ -33,8 +33,8 @@
             :x="j * blockSize"
             :width="blockSize"
             :height="blockSize"
-            :fill="fillColorList[point.mino]"
-            :stroke="strokeColorList[point.mino]"
+            :fill="play.getColorList[point.mino]"
+            :stroke="play.getStrokeColorList[point.mino]"
             :stroke-width="strokeWidth")
     b-button(@click="startPlay" variant="danger") リスタート
     b-modal#result-modal(ref="result-modal" cancel-title="閉じる" ok-title="もう一度プレイする" title="RESULT" @ok="startPlay")
@@ -43,7 +43,7 @@
           b-col(cols="8")
             h4 SCORE
           b-col
-            h4 {{ score }}
+            h4 {{ play.getScore }}
         b-row
           b-col(cols="8")
             h4 タイピングワード数
@@ -56,15 +56,14 @@
               class="twitter-share-button"
               data-url:="https://typris.netlify.com/play"
               data-show-count="true"
-              :data-text="`タイピングで落ちゲー #TYPIS スコアは ${score} 点、タイピングワード数は ${typeWord} でした！`"
+              :data-text="`タイピングで落ちゲー #TYPIS スコアは ${play.getScore} 点、タイピングワード数は ${typeWord} でした！`"
               data-hashtags="TYPRIS"
               data-size="large") シェア
               script(async src="https://platform.twitter.com/widgets.js" charset="utf-8")
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import PlayAreaModule from '@/store/modules/play'
-import TypingModule from '@/store/modules/typing'
+import { play, typing } from '@/store'
 
 export default Vue.extend({
   data() {
@@ -93,51 +92,38 @@ export default Vue.extend({
     }
   },
   computed: {
+    play(): typeof play {
+      return play
+    },
+    typing(): typeof typing {
+      return typing
+    },
     /**
      * プレイ領域の幅[px]
      */
     playAreaWidth(): number {
-      return this.blockSize * PlayAreaModule.maxWidth
+      return this.blockSize * this.play.maxWidth
     },
     /**
      * プレイ領域の高さ[px]
      */
     playAreaHeight(): number {
-      return this.blockSize * (PlayAreaModule.maxHeight + 1)
-    },
-    playArea() {
-      // 直接importしたものをsvgでつかうと、cannot find PlayAreaModuleと言われてしまうため。
-      return PlayAreaModule.getPlayArea
-    },
-    /**
-     * ミノ塗りつぶしの色
-     */
-    fillColorList() {
-      return PlayAreaModule.getColorList
-    },
-    /**
-     * ミノの枠色
-     */
-    strokeColorList() {
-      return PlayAreaModule.getStrokeColorList
+      return this.blockSize * (this.play.maxHeight + 1)
     },
     /**
      * ゲームオーバーを監視するために必要
      */
-    gameOver() {
-      return PlayAreaModule.getGameOver
+    gameOver(): boolean {
+      return this.play.getGameOver
     },
     /**
      * レベルを監視するために必要
      */
-    level() {
-      return PlayAreaModule.getLevel
+    level(): number {
+      return this.play.getLevel
     },
-    score() {
-      return PlayAreaModule.getScore
-    },
-    typeWord() {
-      return TypingModule.getTypeWord
+    typeWord(): number {
+      return this.typing.getTypeWord
     }
   },
   watch: {
@@ -149,7 +135,7 @@ export default Vue.extend({
     level() {
       window.clearInterval(this.interval)
       this.interval = window.setInterval(
-        () => PlayAreaModule.moveDown(),
+        () => this.play.moveDown(),
         this.speed * this.baseSpeed ** this.level
       )
     }
@@ -165,11 +151,8 @@ export default Vue.extend({
       if (this.interval) {
         window.clearInterval(this.interval)
       }
-      await PlayAreaModule.startPlay()
-      this.interval = window.setInterval(
-        () => PlayAreaModule.moveDown(),
-        this.speed
-      )
+      await this.play.startPlay()
+      this.interval = window.setInterval(() => this.play.moveDown(), this.speed)
     }
   }
 })

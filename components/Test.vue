@@ -14,31 +14,30 @@
 
 <script lang="ts">
 import Vue from 'vue'
-// import { setInterval } from 'timers'
-import PlayAreaModule from '@/store/modules/play'
+import { play } from '@/store'
 
 export default Vue.extend({
   methods: {
     drop() {
-      PlayAreaModule.moveDrop()
+      play.moveDrop()
     },
     right() {
-      PlayAreaModule.moveRight()
+      play.moveRight()
     },
     left() {
-      PlayAreaModule.moveLeft()
+      play.moveLeft()
     },
     down() {
-      PlayAreaModule.moveDown()
+      play.moveDown()
     },
     auto() {
-      setInterval(() => PlayAreaModule.moveDown(), 500)
+      setInterval(() => play.moveDown(), 500)
     },
     rotate() {
-      PlayAreaModule.rotate()
+      play.rotate()
     },
     hold() {
-      PlayAreaModule.setHold()
+      play.setHold()
     }
   }
 })

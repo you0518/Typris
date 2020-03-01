@@ -251,7 +251,8 @@ export default class Play extends VuexModule {
         if (minoBlock[y][x] === 0) {
           return
         }
-        this.playArea[currentY + y][currentX + x] = cloneDeep(empty)
+        // 普通に代入するとリアクティブじゃなくなる
+        this.playArea[currentY + y].splice(currentX + x, 1, cloneDeep(empty))
       })
     })
 
@@ -296,7 +297,8 @@ export default class Play extends VuexModule {
         if (minoBlock[y][x] === 0) {
           return
         }
-        this.playArea[currentY + y][currentX + x] = cloneDeep(empty)
+        // 普通に代入するとリアクティブじゃなくなる
+        this.playArea[currentY + y].splice(currentX + x, 1, cloneDeep(empty))
       })
     })
 
@@ -395,7 +397,8 @@ export default class Play extends VuexModule {
         if (!mino) {
           return
         }
-        this.playArea[currentY + y][currentX + x] = cloneDeep(empty)
+        // 普通に代入するとリアクティブじゃなくなる
+        this.playArea[currentY + y].splice(currentX + x, 1, cloneDeep(empty))
       })
     })
   }
